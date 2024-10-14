@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>羊了个羊</title>
     <style>
@@ -16,13 +16,10 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
+            height: 120vh;
         }
         .main {
             position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
         .item {
             position: absolute;
@@ -52,11 +49,9 @@
             border: 1px solid #ddd;
             background-color: #ddd;
             margin: 0 auto;
-            display: flex;
-            justify-content: center;
         }
         #timer {
-            font-size: 4vw; /* 根据屏幕宽度设置字体大小 */
+            font-size: 24px;
             margin-bottom: 20px;
         }
     </style>
@@ -141,22 +136,32 @@
             bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111404_35203.jpg",
         },
     ];
-    const size = Math.min(window.innerWidth, window.innerHeight) * 0.08;
+    // 卡片大小
+    const size = 50;
+    // 矩阵行
     const rows = 10;
+    // 矩阵列
     const cols = 10;
+    // 每组为3个
     const oneGoupCount = 3;
+    // 每个卡片有x组
     const group = 15;
+    // 总共6层，即6个表格
     const layerCount = 60;
+    // 游戏时间限制（秒）
     const gameTimeLimit = 15 * 60;
     let gameTimeRemaining = gameTimeLimit;
     let timerInterval;
 
+    // 表格html
     const cellHtml = [];
+    // 将生成所有的卡片
     const renderData = Array.from(new Array(oneGoupCount * group))
         .map(v => simpleData.map(v => ({...v})))
         .flat()
         .sort(v => Math.random() - 0.5);
 
+    // 第一步：绘制出表格矩阵
     for (let ly = layerCount - 1; ly >= 0; ly--) {
         for (let i = 0; i < rows; i++) {
             for (let j = 0; j < cols; j++) {
@@ -183,6 +188,7 @@
     moveList.style.height = `${size}px`;
     moveList.style.width = `${size * 7}px`;
 
+    // 初始化倒计时
     function startTimer() {
         timerInterval = setInterval(() => {
             let minutes = Math.floor(gameTimeRemaining / 60);
@@ -198,8 +204,8 @@
         }, 1000);
     }
 
+    // 启动倒计时
     startTimer();
-
 
     // 第二步：计算被遮住的底牌需标暗色
     const checkDisabled = items => {
@@ -254,26 +260,6 @@
         });
     };
 
-
-    // 监听设备的移动
-    if (window.DeviceMotionEvent) {
-        window.addEventListener('devicemotion', function(event) {
-            const acceleration = event.accelerationIncludingGravity;
-            if (acceleration.x || acceleration.y) {
-                main.querySelectorAll(".item").forEach(item => {
-                    // 根据加速度值动态调整方块位置
-                    const newX = parseFloat(item.style.left) + acceleration.x * 2;
-                    const newY = parseFloat(item.style.top) + acceleration.y * 2;
-
-                    // 防止方块超出边界
-                    item.style.left = `${Math.max(0, Math.min(newX, main.clientWidth - size))}px`;
-                    item.style.top = `${Math.max(0, Math.min(newY, main.clientHeight - size))}px`;
-                });
-            }
-        });
-    } else {
-        alert("您的设备不支持重力感应");
-    }
     // 第三步：点击卡片进行消除计算
     let canMove = true;
     // 点击棋子，动画移动
