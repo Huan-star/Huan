@@ -4,12 +4,9 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <title>羊了个羊</title>
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
     body {
       margin: 0;
       display: flex;
@@ -18,9 +15,7 @@
       justify-content: center;
       height: 105vh;
     }
-    .main {
-      position: relative;
-    }
+    .main { position: relative; }
     .item {
       position: absolute;
       background: no-repeat center center #ffffff;
@@ -74,7 +69,6 @@
       cursor: pointer;
     }
   </style>
-
 </head>
 <body>
 <div id="timer">15:00</div>
@@ -85,130 +79,87 @@
   <button onclick="restartGame()">重新开始</button>
   <button onclick="continueGame()">继续游戏</button>
 </div>
-</body>
 
 <script>
-  // 基础数据
   const simpleData = [
-    {
-      name: "刷子",
-      color: "#ff1100",
-      bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116110857_67329.jpg",
-    },
-    {
-      name: "奶瓶",
-      color: "#ff8800",
-      bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111114_92056.jpg",
-    },
-    {
-      name: "玉米",
-      color: "green",
-      bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111348_83578.jpg",
-    },
-    {
-      name: "粪叉",
-      color: "blue",
-      bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116110838_97880.jpg",
-    },
-    {
-      name: "草",
-      color: "#779922",
-      bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111500_79089.jpg",
-    },
-    {
-      name: "白菜",
-      color: "#335577",
-      bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111105_26982.jpg",
-    },
-    {
-      name: "草垛",
-      color: "#335577",
-      bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116110823_14228.jpg",
-    },
-    {
-      name: "小木墩",
-      color: "#335577",
-      bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111019_19911.jpg",
-    },
-    {
-      name: "胡萝卜",
-      color: "#335577",
-      bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111509_62273.jpg",
-    },
-    {
-      name: "黄铃铛",
-      color: "#335577",
-      bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111517_86581.jpg",
-    },
-    {
-      name: "白棉花",
-      color: "#335577",
-      bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111527_63174.jpg",
-    },
-    {
-      name: "小火堆",
-      color: "#335577",
-      bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111122_73680.jpg",
-    },
-    {
-      name: "红水桶",
-      color: "#335577",
-      bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111356_67362.jpg",
-    },
-    {
-      name: "蓝手套",
-      color: "#335577",
-      bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111404_35203.jpg",
-    },
+    { name: "刷子", color: "#ff1100", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116110857_67329.jpg" },
+    { name: "奶瓶", color: "#ff8800", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111114_92056.jpg" },
+    { name: "玉米", color: "green", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111348_83578.jpg" },
+    { name: "粪叉", color: "blue", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116110838_97880.jpg" },
+    { name: "草", color: "#779922", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111500_79089.jpg" },
+    { name: "白菜", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111105_26982.jpg" },
+    { name: "草垛", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116110823_14228.jpg" },
+    { name: "小木墩", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111019_19911.jpg" },
+    { name: "胡萝卜", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111509_62273.jpg" },
+    { name: "黄铃铛", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111517_86581.jpg" },
+    { name: "白棉花", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111527_63174.jpg" },
+    { name: "小火堆", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111122_73680.jpg" },
+    { name: "红水桶", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111356_67362.jpg" },
+    { name: "蓝手套", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111404_35203.jpg" },
   ];
 
-  // 游戏设置
-  const size = 40;  // 卡片大小
-  const rows = 10;  // 矩阵行
-  const cols = 10;  // 矩阵列
-  const oneGoupCount = 3;  // 每组为3个
-  const group = 15;  // 每个卡片有x组
-  const layerCount = 60;  // 总共6层
-  const gameTimeLimit = 15 * 60;  // 游戏时间限制（秒）
-  let gameTimeRemaining = gameTimeLimit;  // 剩余时间
+  const size = 40;
+  const rows = 10;
+  const cols = 10;
+  const layerCount = 60;
+  const gameTimeLimit = 15 * 60;
+  let gameTimeRemaining = gameTimeLimit;
   let timerInterval;
-
-  const cellHtml = [];  // 表格html
-  const renderData = Array.from(new Array(oneGoupCount * group))
-          .map(v => simpleData.map(v => ({...v})))
-          .flat()
-          .sort(v => Math.random() - 0.5);
-
-  // 绘制出表格矩阵
-  for (let ly = layerCount - 1; ly >= 0; ly--) {
-    for (let i = 0; i < rows; i++) {
-      for (let j = 0; j < cols; j++) {
-        let pyStep = (ly + 1) % 2 === 0 ? size / 2 : 0;
-        let item = Math.random() > 0.7 && renderData.pop();
-
-        item &&
-        cellHtml.push(`<div class="item" onclick="move(this)" id="m${ly}-${i}-${j}"
-                    style="width:${size}px;height:${size}px;left:${
-                size * j + pyStep
-        }px;top:${size * i + pyStep}px;background-image:url(${
-                item.bg || ""
-        })">${item.name || ""}</div>`);
-      }
-    }
-  }
+  let level = 1;
 
   const main = document.querySelector(".main");
   const moveList = document.querySelector(".move-list");
   const timer = document.getElementById("timer");
   const gameOverMenu = document.getElementById("gameOverMenu");
 
-  main.innerHTML = cellHtml.reverse().join("");
-  main.style.height = `${size * rows + size * 2}px`;
-  main.style.width = `${size * cols}px`;
-  moveList.style.height = `${size}px`;
-  moveList.style.width = `${size * 7}px`;
+  function startNewLevel() {
+    main.innerHTML = "";
+    moveList.innerHTML = "";
+    gameTimeRemaining = gameTimeLimit;
+    clearInterval(timerInterval);
+    startTimer();
+    generateLevel();
+    checkDisabled();
+  }
 
-  // 初始化倒计时
+  function generateLevel() {
+    // 随机打乱 simpleData 数组，并根据当前关卡数量选择卡牌类型
+    const shuffledData = simpleData.sort(() => Math.random() - 0.5);
+    const cardTypes = Math.min(level + 2, simpleData.length);
+    const selectedCards = shuffledData.slice(0, cardTypes);
+
+    // 根据当前关卡数量生成卡牌组数
+    const groups = 3 * level;
+
+    // 从选定的卡牌类型中随机生成卡牌数据
+    const renderData = Array.from(new Array(groups))
+            .flatMap(() => selectedCards.map(v => ({ ...v })))
+            .sort(() => Math.random() - 0.5);
+
+    // 创建卡牌的 HTML 元素
+    const cellHtml = [];
+
+    for (let ly = layerCount - 1; ly >= 0; ly--) {
+      for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < cols; j++) {
+          let pyStep = (ly + 1) % 2 === 0 ? size / 2 : 0;
+          let item = Math.random() > 0.7 && renderData.pop();
+
+          item &&
+          cellHtml.push(`<div class="item" onclick="move(this)" id="m${ly}-${i}-${j}"
+                              style="width:${size}px;height:${size}px;left:${size * j + pyStep}px;top:${size * i + pyStep}px;background-image:url(${item.bg || ""})">${item.name || ""}</div>`);
+        }
+      }
+    }
+
+    // 设置主界面的内容和样式
+    main.innerHTML = cellHtml.reverse().join("");
+    main.style.height = `${size * rows + size * 2}px`;
+    main.style.width = `${size * cols}px`;
+    moveList.style.height = `${size}px`;
+    moveList.style.width = `${size * 7}px`;
+  }
+
   function startTimer() {
     timerInterval = setInterval(() => {
       let minutes = Math.floor(gameTimeRemaining / 60);
@@ -223,8 +174,22 @@
     }, 1000);
   }
 
-  // 启动倒计时
-  startTimer();
+  const showGameOverMenu = (message) => {
+    alert(message);
+    gameOverMenu.style.display = 'flex';
+    clearInterval(timerInterval);
+  };
+
+  const restartGame = () => {
+    level = 1;
+    startNewLevel();
+  };
+
+  const continueGame = () => {
+    gameTimeRemaining += 20;
+    gameOverMenu.style.display = 'none';
+    startTimer();
+  };
 
   // 检查被遮住的底牌需标暗色
   const checkDisabled = (items) => {
@@ -320,9 +285,7 @@
             v => v.innerHTML === me.innerHTML
     );
     if (findResult.length === 3) {
-      // 播报被消除的卡牌名称
-      speakCardName(me.innerHTML); // 添加这行
-
+      speakCardName(me.innerHTML);
       findResult.forEach(v => {
         v.ontransitionend = e => {
           moveList.removeChild(v);
@@ -337,32 +300,14 @@
       if (moveList.children.length === 7) {
         showGameOverMenu("池子已满，游戏结束");
       } else if (main.children.length === 0) {
-        alert("恭喜通关");
-        return location.reload();
+        alert(`恭喜通关第${level}关`);
+        level+=2;
+        startNewLevel();
       }
     }, 1000);
     checkDisabled();
   };
-
-  // 显示游戏结束菜单
-  const showGameOverMenu = (message) => {
-    alert(message);
-    gameOverMenu.style.display = 'flex';
-    clearInterval(timerInterval); // 停止计时器
-  };
-
-  // 重新开始游戏
-  const restartGame = () => {
-    location.reload(); // 刷新页面
-  };
-
-  // 继续游戏（隐藏菜单，重启计时器）
-  const continueGame = () => {
-    gameTimeRemaining += 20; // 增加倒计时秒
-    gameOverMenu.style.display = 'none'; // 隐藏菜单
-    startTimer(); // 重新启动计时器
-  };
-
-  checkDisabled();
+  startNewLevel();
 </script>
+</body>
 </html>
