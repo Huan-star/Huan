@@ -1,313 +1,391 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>超级消不停</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 105vh;
-    }
-    .main { position: relative; }
-    .item {
-      position: absolute;
-      background: no-repeat center center #ffffff;
-      border: 1px solid #ddd;
-      background-size: 100%;
-      color: transparent;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 0;
-      transition: left 0.3s, top 0.3s, transform 0.1s;
-    }
-    .item:after {
-      content: "";
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      transition: background-color 0.2s;
-    }
-    .disabled:after {
-      background-color: rgba(0, 0, 0, 0.7);
-    }
-    .move-list {
-      border: 1px solid #ddd;
-      background-color: #ddd;
-      margin: 0 auto;
-    }
-    #timer {
-      font-size: 24px;
-      margin-bottom: 20px;
-    }
-    .menu {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background-color: white;
-      border: 1px solid #ccc;
-      padding: 20px;
-      z-index: 10;
-    }
-    .menu button {
-      margin: 5px;
-      padding: 10px 20px;
-      cursor: pointer;
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>超级消不停</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 105vh;
+        }
+        .main { position: relative; }
+        /*让卡牌看起来更立体*/
+        .item {
+            position: absolute;
+            background: no-repeat center center #ffffff;
+            border: 1px solid #ddd;
+            background-size: 100%;
+            color: transparent;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 0;
+            transition: left 0.2s, top 0.2s, transform 0.2s; /* 增加 transform 的过渡时间 */
+            width: 60px; /* 设置麻将块的宽度 */
+            height: 105px; /* 设置麻将块的高度 */
+            border-radius: 5px; /* 增加圆角效果 */
+            box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.3); /* 设置阴影以增加立体感 */
+            transform: rotateY(0deg) rotateX(0deg) translateZ(0px); /* 初始化3D效果 */
+        }
+
+        /* 鼠标悬停时的效果 */
+        .item:hover {
+            transform: rotateY(10deg) rotateX(5deg) translateZ(5px); /* 添加旋转和高度变化 */
+        }
+
+        /* 为麻将块添加边框颜色和底部样式 */
+        .item::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 1px solid #aaa; /* 添加边框颜色 */
+            border-radius: 5px; /* 确保边角是圆的 */
+            opacity: 0.3; /* 增加半透明效果 */
+            box-shadow: inset 0px 0px 5px rgba(0, 0, 0, 0.3); /* 内部阴影 */
+        }
+
+        /* 麻将块的内容样式 */
+        .item span {
+            font-size: 20px; /* 字体大小 */
+            color: #333; /* 字体颜色 */
+            position: relative;
+            z-index: 1; /* 确保文本位于前面 */
+        }
+
+        .disabled {
+            opacity: 0.3; /* 调整透明度 */
+            pointer-events: auto; /* 允许点击事件 */
+        }
+
+        .disabled:after {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        /*卡槽设置*/
+        .move-list {
+            border: 1px solid #ddd;
+            background-color: #ddd;
+            margin: 0 auto;
+        }
+
+        /*倒计时设置*/
+        #timer {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .menu {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border: 1px solid #ccc;
+            padding: 20px;
+            z-index: 10;
+        }
+        .menu button {
+            margin: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
 <div id="timer">15:00</div>
 <div class="main"></div>
 <div class="move-list"></div>
 <div class="menu" id="gameOverMenu">
-  <h2>游戏结束</h2>
-  <button onclick="restartGame()">重新开始</button>
-  <button onclick="continueGame()">继续游戏</button>
+    <h2>游戏结束</h2>
+    <button onclick="restartGame()">重新开始</button>
+    <button onclick="continueGame()">继续游戏</button>
 </div>
 
 <script>
-  const simpleData = [
-    { name: "刷子", color: "#ff1100", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116110857_67329.jpg" },
-    { name: "奶瓶", color: "#ff8800", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111114_92056.jpg" },
-    { name: "玉米", color: "green", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111348_83578.jpg" },
-    { name: "粪叉", color: "blue", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116110838_97880.jpg" },
-    { name: "草", color: "#779922", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111500_79089.jpg" },
-    { name: "白菜", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111105_26982.jpg" },
-    { name: "草垛", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116110823_14228.jpg" },
-    { name: "小木墩", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111019_19911.jpg" },
-    { name: "胡萝卜", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111509_62273.jpg" },
-    { name: "黄铃铛", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111517_86581.jpg" },
-    { name: "白棉花", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111527_63174.jpg" },
-    { name: "小火堆", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111122_73680.jpg" },
-    { name: "红水桶", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111356_67362.jpg" },
-    { name: "蓝手套", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111404_35203.jpg" },
-  ];
+    const simpleData = [
+        { name: "刷子", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116110857_67329.jpg" },
+        { name: "奶瓶", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111114_92056.jpg" },
+        { name: "玉米", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111348_83578.jpg" },
+        { name: "粪叉", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116110838_97880.jpg" },
+        { name: "草", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111500_79089.jpg" },
+        { name: "白菜", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111105_26982.jpg" },
+        { name: "草垛", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116110823_14228.jpg" },
+        { name: "木墩", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111019_19911.jpg" },
+        { name: "胡萝卜", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111509_62273.jpg" },
+        { name: "铃铛", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111517_86581.jpg" },
+        { name: "棉花", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111527_63174.jpg" },
+        { name: "炭火", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111122_73680.jpg" },
+        { name: "水桶", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111356_67362.jpg" },
+        { name: "手套", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111404_35203.jpg" },
 
-  const size = 40;
-  const rows = 10;
-  const cols = 10;
-  const layerCount = 60;
-  const gameTimeLimit = 15 * 60;
-  let gameTimeRemaining = gameTimeLimit;
-  let timerInterval;
-  let level = 1;
+        { name: "一筒", color: "#335577", bg: "https://s2.loli.net/2024/10/14/Sjc8N4ZPn9gqXKV.png" },
+        { name: "二筒", color: "#335577", bg: "https://s2.loli.net/2024/10/14/8MWiNqyZPH5QaFI.png" },
+        { name: "三筒", color: "#335577", bg: "https://s2.loli.net/2024/10/14/xXqIjnaKA2ms3FJ.png" },
+        { name: "四筒", color: "#335577", bg: "https://s2.loli.net/2024/10/14/6IH7qhoFpfkZLVt.png" },
+        { name: "五筒", color: "#335577", bg: "https://s2.loli.net/2024/10/14/zaGE5dsljTQoCfk.png" },
+        { name: "六筒", color: "#335577", bg: "https://s2.loli.net/2024/10/14/1YHsW3t4wnhGXfc.png" },
+        { name: "七筒", color: "#335577", bg: "https://s2.loli.net/2024/10/14/pixoEsS6jVyrYLf.png" },
+        { name: "八筒", color: "#335577", bg: "https://s2.loli.net/2024/10/14/tkuyd3XbfoHasMP.png" },
+        { name: "九筒", color: "#335577", bg: "https://s2.loli.net/2024/10/14/DgT8jVUQByl2e3J.png" },
 
-  const main = document.querySelector(".main");
-  const moveList = document.querySelector(".move-list");
-  const timer = document.getElementById("timer");
-  const gameOverMenu = document.getElementById("gameOverMenu");
+        { name: "幺鸡", color: "#335577", bg: "https://s2.loli.net/2024/10/14/48Gp5m3E2nlUBeQ.png" },
+        { name: "二条", color: "#335577", bg: "https://s2.loli.net/2024/10/14/htBUSevOmyjcVl3.png" },
+        { name: "三条", color: "#335577", bg: "https://s2.loli.net/2024/10/14/IAisPdnaTWV3b29.png" },
+        { name: "四条", color: "#335577", bg: "https://s2.loli.net/2024/10/14/hExlsAYnJy13Mug.png" },
+        { name: "五条", color: "#335577", bg: "https://s2.loli.net/2024/10/14/Xx9MyEmcbehUFTH.png" },
+        { name: "六条", color: "#335577", bg: "https://s2.loli.net/2024/10/14/dzNWxnYu5kmSjAI.png" },
+        { name: "七条", color: "#335577", bg: "https://s2.loli.net/2024/10/14/vgOFXS9wRMAd6LD.png" },
+        { name: "八条", color: "#335577", bg: "https://s2.loli.net/2024/10/14/PrOQuIkLJWFaE1q.png" },
+        { name: "九条", color: "#335577", bg: "https://s2.loli.net/2024/10/14/x7qMuK9QETw5FhV.png" },
 
-  function startNewLevel() {
-    main.innerHTML = "";
-    moveList.innerHTML = "";
-    gameTimeRemaining = gameTimeLimit;
-    clearInterval(timerInterval);
-    startTimer();
-    generateLevel();
-    checkDisabled();
-  }
+        { name: "一万", color: "#335577", bg: "https://s2.loli.net/2024/10/14/YHiwKjW7PqAbTp9.png" },
+        { name: "二万", color: "#335577", bg: "https://s2.loli.net/2024/10/14/SmkEZ1zJTs3xMbe.png" },
+        { name: "三万", color: "#335577", bg: "https://s2.loli.net/2024/10/14/ZnAQauz4vyMSjTV.png" },
+        { name: "四万", color: "#335577", bg: "https://s2.loli.net/2024/10/14/iCcJvdMZk8VpEFQ.png" },
+        { name: "五万", color: "#335577", bg: "https://s2.loli.net/2024/10/14/DRzX9kvNVIQYpqt.png" },
+        { name: "六万", color: "#335577", bg: "https://s2.loli.net/2024/10/14/8wa9VRqlKPDpnd7.png" },
+        { name: "七万", color: "#335577", bg: "https://s2.loli.net/2024/10/14/G7fkdmxJr2MTD8L.png" },
+        { name: "八万", color: "#335577", bg: "https://s2.loli.net/2024/10/14/t37PsCvz4oaHFyR.png" },
+        { name: "九万", color: "#335577", bg: "https://s2.loli.net/2024/10/14/wudQi7nL3HXO4Fq.png" },
 
-  function generateLevel() {
-    // 随机打乱 simpleData 数组，并根据当前关卡数量选择卡牌类型
-    const shuffledData = simpleData.sort(() => Math.random() - 0.5);
-    const cardTypes = Math.min(level + 2, simpleData.length);
-    const selectedCards = shuffledData.slice(0, cardTypes);
+        { name: "梅花", color: "#335577", bg: "https://s2.loli.net/2024/10/14/cajB9rfECkRHAOI.png" },
+        { name: "兰花", color: "#335577", bg: "https://s2.loli.net/2024/10/14/xHt5JXjsR3gCGhA.png" },
+        { name: "竹子", color: "#335577", bg: "https://s2.loli.net/2024/10/14/Sj5wNxGry1AlgW9.png" },
+        { name: "菊花", color: "#335577", bg: "https://s2.loli.net/2024/10/14/5YKrcjPTv9LJBhC.png" },
 
-    // 根据当前关卡数量生成卡牌组数
-    const groups = 3 * level;
+        { name: "东风", color: "#335577", bg: "https://s2.loli.net/2024/10/14/8eoNf1YRguwcU7Z.png" },
+        { name: "西风", color: "#335577", bg: "https://s2.loli.net/2024/10/14/N23vuDdCk8lISR9.png" },
+        { name: "南风", color: "#335577", bg: "https://s2.loli.net/2024/10/14/htgJEX2W36dMnYl.png" },
+        { name: "北风", color: "#335577", bg: "https://s2.loli.net/2024/10/14/e7nBJ6dr3fmX9RG.png" },
+        { name: "红中", color: "#335577", bg: "https://s2.loli.net/2024/10/14/9qaAWMfb6c5hxek.png" },
+        { name: "白板", color: "#335577", bg: "https://s2.loli.net/2024/10/14/aC9fbEochwRj6kM.png" },
+        { name: "发财", color: "#335577", bg: "https://s2.loli.net/2024/10/14/ulmhPOZ19HGTfsW.png" }
+    ];
 
-    // 从选定的卡牌类型中随机生成卡牌数据
-    const renderData = Array.from(new Array(groups))
+    const size = 40;
+    const rows = 10;
+    const cols = 10;
+    const layerCount = 60;
+    const gameTimeLimit = 15 * 60;
+    let gameTimeRemaining = gameTimeLimit;
+    let timerInterval;
+    let level = 1;
+
+    const main = document.querySelector(".main");
+    const moveList = document.querySelector(".move-list");
+    const timer = document.getElementById("timer");
+    const gameOverMenu = document.getElementById("gameOverMenu");
+
+    function startNewLevel() {
+        main.innerHTML = "";
+        moveList.innerHTML = "";
+        gameTimeRemaining = gameTimeLimit;
+        clearInterval(timerInterval);
+        startTimer();
+        generateLevel();
+        checkDisabled();
+    }
+
+    function generateLevel() {
+        // 随机打乱 simpleData 数组，并根据当前关卡数量选择卡牌类型
+        const shuffledData = simpleData.sort(() => Math.random() - 0.5);
+        const cardTypes = Math.min(level + 2, simpleData.length);
+        const selectedCards = shuffledData.slice(0, cardTypes);
+
+        // 根据当前关卡数量生成卡牌组数
+        const groups = 3 * level;
+
+        // 从选定的卡牌类型中随机生成卡牌数据
+        const renderData = Array.from(new Array(groups))
             .flatMap(() => selectedCards.map(v => ({ ...v })))
             .sort(() => Math.random() - 0.5);
 
-    // 创建卡牌的 HTML 元素
-    const cellHtml = [];
+        // 创建卡牌的 HTML 元素
+        const cellHtml = [];
 
-    for (let ly = layerCount - 1; ly >= 0; ly--) {
-      for (let i = 0; i < rows; i++) {
-        for (let j = 0; j < cols; j++) {
-          let pyStep = (ly + 1) % 2 === 0 ? size / 2 : 0;
-          let item = Math.random() > 0.7 && renderData.pop();
+        for (let ly = layerCount - 1; ly >= 0; ly--) {
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < cols; j++) {
+                    let pyStep = (ly + 1) % 2 === 0 ? size / 2 : 0;
+                    let item = Math.random() > 0.7 && renderData.pop();
 
-          item &&
-          cellHtml.push(`<div class="item" onclick="move(this)" id="m${ly}-${i}-${j}"
+                    item &&
+                    cellHtml.push(`<div class="item" onclick="move(this)" id="m${ly}-${i}-${j}"
                               style="width:${size}px;height:${size}px;left:${size * j + pyStep}px;top:${size * i + pyStep}px;background-image:url(${item.bg || ""})">${item.name || ""}</div>`);
+                }
+            }
         }
-      }
+
+        // 设置主界面的内容和样式
+        main.innerHTML = cellHtml.reverse().join("");
+        main.style.height = `${size * rows + size * 2}px`;
+        main.style.width = `${size * cols}px`;
+        moveList.style.height = `${size}px`;
+        moveList.style.width = `${size * 7}px`;
     }
 
-    // 设置主界面的内容和样式
-    main.innerHTML = cellHtml.reverse().join("");
-    main.style.height = `${size * rows + size * 2}px`;
-    main.style.width = `${size * cols}px`;
-    moveList.style.height = `${size}px`;
-    moveList.style.width = `${size * 7}px`;
-  }
+    function startTimer() {
+        timerInterval = setInterval(() => {
+            let minutes = Math.floor(gameTimeRemaining / 60);
+            let seconds = gameTimeRemaining % 60;
+            timer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            gameTimeRemaining--;
 
-  function startTimer() {
-    timerInterval = setInterval(() => {
-      let minutes = Math.floor(gameTimeRemaining / 60);
-      let seconds = gameTimeRemaining % 60;
-      timer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-      gameTimeRemaining--;
+            if (gameTimeRemaining < 0) {
+                clearInterval(timerInterval);
+                showGameOverMenu("时间到，游戏结束");
+            }
+        }, 1000);
+    }
 
-      if (gameTimeRemaining < 0) {
+    const showGameOverMenu = (message) => {
+        alert(message);
+        gameOverMenu.style.display = 'flex';
         clearInterval(timerInterval);
-        showGameOverMenu("时间到，游戏结束");
-      }
-    }, 1000);
-  }
-
-  const showGameOverMenu = (message) => {
-    alert(message);
-    gameOverMenu.style.display = 'flex';
-    clearInterval(timerInterval);
-  };
-
-  const restartGame = () => {
-    level = 1;
-    startNewLevel();
-  };
-
-  const continueGame = () => {
-    gameTimeRemaining += 20;
-    gameOverMenu.style.display = 'none';
-    startTimer();
-  };
-
-  // 检查被遮住的底牌需标暗色
-  const checkDisabled = (items) => {
-    (items || main.querySelectorAll(".item")).forEach((v, i) => {
-      const arr = v.id
-              .substring(1)
-              .split("-")
-              .map(v => Number(v));
-      const isPy = (arr[0] + 1) % 2 === 0;
-      for (let i = arr[0] + 1; i <= layerCount - 1; i++) {
-        const isPyB = (i + 1) % 2 === 0;
-        if (isPy === isPyB) {
-          const el = main.querySelector(`#m${i}-${arr[1]}-${arr[2]}`);
-          if (el) {
-            v.classList.add("disabled");
-            break;
-          }
-        } else if (isPy && !isPyB) {
-          if (
-                  ![
-                    `${i}-${arr[1]}-${arr[2]}`,
-                    `${i}-${arr[1]}-${arr[2] + 1}`,
-                    `${i}-${arr[1] + 1}-${arr[2]}`,
-                    `${i}-${arr[1] + 1}-${arr[2] + 1}`,
-                  ].every(k => {
-                    return !main.querySelector(`#m` + k);
-                  })
-          ) {
-            v.classList.add("disabled");
-            break;
-          } else {
-            v.classList.remove("disabled");
-          }
-        } else if (!isPy && isPyB) {
-          if (
-                  ![
-                    `${i}-${arr[1]}-${arr[2]}`,
-                    `${i}-${arr[1]}-${arr[2] - 1}`,
-                    `${i}-${arr[1] - 1}-${arr[2]}`,
-                    `${i}-${arr[1] - 1}-${arr[2] - 1}`,
-                  ].every(k => {
-                    return !main.querySelector(`#m` + k);
-                  })
-          ) {
-            v.classList.add("disabled");
-            break;
-          } else {
-            v.classList.remove("disabled");
-          }
-        }
-      }
-    });
-  };
-
-  // 点击卡片进行消除计算
-  let canMove = true;
-  const move = (me) => {
-    let left = moveList.offsetLeft;
-    let top = moveList.offsetTop;
-    if (!canMove || me.className.indexOf("disabled") >= 0) {
-      return;
-    }
-    canMove = false;
-    if (moveList.children.length > 0) {
-      let el = moveList.children[moveList.children.length - 1];
-      left = el.offsetLeft + size;
-      top = el.offsetTop;
-    }
-    me.style.top = `${top}px`;
-    me.style.left = `${left}px`;
-    me.transitionNamesCount = 0;
-    me.ontransitionend = e => {
-      me.transitionNamesCount++;
-      if (me.transitionNamesCount === 2) {
-        moveEnd(me);
-        canMove = true;
-      }
     };
-  };
-  // 语音播报函数
-  function speakCardName(cardName) {
-    const utterance = new SpeechSynthesisUtterance(cardName);
-    window.speechSynthesis.speak(utterance);
-  }
 
-  // 动画结束的相关计算
-  const moveEnd = (me) => {
-    me.ontransitionend = null;
-    me.setAttribute("onclick", "");
-    moveList.appendChild(me);
-
-    const findResult = [...moveList.children].filter(
-            v => v.innerHTML === me.innerHTML
-    );
-    if (findResult.length === 3) {
-      speakCardName(me.innerHTML);
-      findResult.forEach(v => {
-        v.ontransitionend = e => {
-          moveList.removeChild(v);
-          [...moveList.children].forEach((v, i) => {
-            v.style.left = `${i * size + moveList.offsetLeft}px`;
-          });
-        };
-        setTimeout(() => (v.style.transform = "scale(0)"));
-      });
-    }
-    setTimeout(() => {
-      if (moveList.children.length === 7) {
-        showGameOverMenu("池子已满，游戏结束");
-      } else if (main.children.length === 0) {
-        alert(`恭喜通关第${level}关`);
-        level+=2;
+    const restartGame = () => {
+        level = 1;
         startNewLevel();
-      }
-    }, 1000);
-    checkDisabled();
-  };
-  startNewLevel();
+    };
+
+    const continueGame = () => {
+        gameTimeRemaining += 20;
+        gameOverMenu.style.display = 'none';
+        startTimer();
+    };
+
+    // 检查被遮住的底牌需标暗色
+    const checkDisabled = (items) => {
+        (items || main.querySelectorAll(".item")).forEach((v, i) => {
+            const arr = v.id
+                .substring(1)
+                .split("-")
+                .map(v => Number(v));
+            const isPy = (arr[0] + 1) % 2 === 0;
+            for (let i = arr[0] + 1; i <= layerCount - 1; i++) {
+                const isPyB = (i + 1) % 2 === 0;
+                if (isPy === isPyB) {
+                    const el = main.querySelector(`#m${i}-${arr[1]}-${arr[2]}`);
+                    if (el) {
+                        v.classList.add("disabled");
+                        break;
+                    }
+                } else if (isPy && !isPyB) {
+                    if (
+                        ![
+                            `${i}-${arr[1]}-${arr[2]}`,
+                            `${i}-${arr[1]}-${arr[2] + 1}`,
+                            `${i}-${arr[1] + 1}-${arr[2]}`,
+                            `${i}-${arr[1] + 1}-${arr[2] + 1}`,
+                        ].every(k => {
+                            return !main.querySelector(`#m` + k);
+                        })
+                    ) {
+                        v.classList.add("disabled");
+                        break;
+                    } else {
+                        v.classList.remove("disabled");
+                    }
+                } else if (!isPy && isPyB) {
+                    if (
+                        ![
+                            `${i}-${arr[1]}-${arr[2]}`,
+                            `${i}-${arr[1]}-${arr[2] - 1}`,
+                            `${i}-${arr[1] - 1}-${arr[2]}`,
+                            `${i}-${arr[1] - 1}-${arr[2] - 1}`,
+                        ].every(k => {
+                            return !main.querySelector(`#m` + k);
+                        })
+                    ) {
+                        v.classList.add("disabled");
+                        break;
+                    } else {
+                        v.classList.remove("disabled");
+                    }
+                }
+            }
+        });
+    };
+
+    // 点击卡片进行消除计算
+    let canMove = true;
+    const move = (me) => {
+        let left = moveList.offsetLeft;
+        let top = moveList.offsetTop;
+        if (!canMove || me.className.indexOf("disabled") >= 0) {
+            return;
+        }
+        canMove = false;
+        if (moveList.children.length > 0) {
+            let el = moveList.children[moveList.children.length - 1];
+            left = el.offsetLeft + size;
+            top = el.offsetTop;
+        }
+        me.style.top = `${top}px`;
+        me.style.left = `${left}px`;
+        me.transitionNamesCount = 0;
+        me.ontransitionend = e => {
+            me.transitionNamesCount++;
+            if (me.transitionNamesCount === 2) {
+                moveEnd(me);
+                canMove = true;
+            }
+        };
+    };
+    // 语音播报函数
+    function speakCardName(cardName) {
+        const utterance = new SpeechSynthesisUtterance(cardName);
+        window.speechSynthesis.speak(utterance);
+    }
+
+    // 动画结束的相关计算
+    const moveEnd = (me) => {
+        me.ontransitionend = null;
+        me.setAttribute("onclick", "");
+        moveList.appendChild(me);
+
+        const findResult = [...moveList.children].filter(
+            v => v.innerHTML === me.innerHTML
+        );
+        if (findResult.length === 3) {
+            speakCardName(me.innerHTML);
+            findResult.forEach(v => {
+                v.ontransitionend = e => {
+                    moveList.removeChild(v);
+                    [...moveList.children].forEach((v, i) => {
+                        v.style.left = `${i * size + moveList.offsetLeft}px`;
+                    });
+                };
+                setTimeout(() => (v.style.transform = "scale(0)"));
+            });
+        }
+        setTimeout(() => {
+            if (moveList.children.length === 7) {
+                showGameOverMenu("池子已满，游戏结束");
+            } else if (main.children.length === 0) {
+                alert(`恭喜通关第${level}关`);
+                level+=2;
+                startNewLevel();
+            }
+        }, 1000);
+        checkDisabled();
+    };
+    startNewLevel();
 </script>
 </body>
 </html>
