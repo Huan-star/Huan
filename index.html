@@ -54,6 +54,25 @@
             font-size: 24px;
             margin-bottom: 20px;
         }
+        .menu {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border: 1px solid #ccc;
+            padding: 20px;
+            z-index: 10;
+        }
+        .menu button {
+            margin: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
     </style>
 
 </head>
@@ -61,7 +80,13 @@
 <div id="timer">15:00</div>
 <div class="main"></div>
 <div class="move-list"></div>
+<div class="menu" id="gameOverMenu">
+    <h2>游戏结束</h2>
+    <button onclick="restartGame()">重新开始</button>
+    <button onclick="continueGame()">继续游戏</button>
+</div>
 </body>
+
 <script>
     // 基础数据
     const simpleData = [
@@ -136,32 +161,25 @@
             bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111404_35203.jpg",
         },
     ];
-    // 卡片大小
-    const size = 40;
-    // 矩阵行
-    const rows = 10;
-    // 矩阵列
-    const cols = 10;
-    // 每组为3个
-    const oneGoupCount = 3;
-    // 每个卡片有x组
-    const group = 15;
-    // 总共6层，即6个表格
-    const layerCount = 60;
-    // 游戏时间限制（秒）
-    const gameTimeLimit = 15 * 60;
-    let gameTimeRemaining = gameTimeLimit;
+
+    // 游戏设置
+    const size = 40;  // 卡片大小
+    const rows = 10;  // 矩阵行
+    const cols = 10;  // 矩阵列
+    const oneGoupCount = 3;  // 每组为3个
+    const group = 15;  // 每个卡片有x组
+    const layerCount = 60;  // 总共6层
+    const gameTimeLimit = 1 * 60;  // 游戏时间限制（秒）
+    let gameTimeRemaining = gameTimeLimit;  // 剩余时间
     let timerInterval;
 
-    // 表格html
-    const cellHtml = [];
-    // 将生成所有的卡片
+    const cellHtml = [];  // 表格html
     const renderData = Array.from(new Array(oneGoupCount * group))
         .map(v => simpleData.map(v => ({...v})))
         .flat()
         .sort(v => Math.random() - 0.5);
 
-    // 第一步：绘制出表格矩阵
+    // 绘制出表格矩阵
     for (let ly = layerCount - 1; ly >= 0; ly--) {
         for (let i = 0; i < rows; i++) {
             for (let j = 0; j < cols; j++) {
@@ -178,9 +196,11 @@
             }
         }
     }
+
     const main = document.querySelector(".main");
     const moveList = document.querySelector(".move-list");
     const timer = document.getElementById("timer");
+    const gameOverMenu = document.getElementById("gameOverMenu");
 
     main.innerHTML = cellHtml.reverse().join("");
     main.style.height = `${size * rows + size * 2}px`;
@@ -198,8 +218,7 @@
 
             if (gameTimeRemaining < 0) {
                 clearInterval(timerInterval);
-                alert("时间到，游戏结束");
-                location.reload();
+                showGameOverMenu("时间到，游戏结束");
             }
         }, 1000);
     }
@@ -207,8 +226,8 @@
     // 启动倒计时
     startTimer();
 
-    // 第二步：计算被遮住的底牌需标暗色
-    const checkDisabled = items => {
+    // 检查被遮住的底牌需标暗色
+    const checkDisabled = (items) => {
         (items || main.querySelectorAll(".item")).forEach((v, i) => {
             const arr = v.id
                 .substring(1)
@@ -260,10 +279,9 @@
         });
     };
 
-    // 第三步：点击卡片进行消除计算
+    // 点击卡片进行消除计算
     let canMove = true;
-    // 点击棋子，动画移动
-    const move = me => {
+    const move = (me) => {
         let left = moveList.offsetLeft;
         let top = moveList.offsetTop;
         if (!canMove || me.className.indexOf("disabled") >= 0) {
@@ -286,8 +304,9 @@
             }
         };
     };
+
     // 动画结束的相关计算
-    const moveEnd = me => {
+    const moveEnd = (me) => {
         me.ontransitionend = null;
         me.setAttribute("onclick", "");
         moveList.appendChild(me);
@@ -308,8 +327,7 @@
         }
         setTimeout(() => {
             if (moveList.children.length === 7) {
-                alert("池子已满，游戏结束");
-                return location.reload();
+                showGameOverMenu("池子已满，游戏结束");
             } else if (main.children.length === 0) {
                 alert("恭喜通关");
                 return location.reload();
@@ -317,6 +335,26 @@
         }, 1000);
         checkDisabled();
     };
+
+    // 显示游戏结束菜单
+    const showGameOverMenu = (message) => {
+        alert(message);
+        gameOverMenu.style.display = 'flex';
+        clearInterval(timerInterval); // 停止计时器
+    };
+
+    // 重新开始游戏
+    const restartGame = () => {
+        location.reload(); // 刷新页面
+    };
+
+    // 继续游戏（隐藏菜单，重启计时器）
+    const continueGame = () => {
+        gameTimeRemaining += 20; // 增加倒计时秒
+        gameOverMenu.style.display = 'none'; // 隐藏菜单
+        startTimer(); // 重新启动计时器
+    };
+
     checkDisabled();
 </script>
 </html>
