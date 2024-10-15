@@ -63,7 +63,7 @@
         }
 
         .disabled {
-            opacity: 0.3; /* 调整透明度 */
+            opacity: 1; /* 调整麻将透明度 */
             pointer-events: auto; /* 允许点击事件 */
         }
 
@@ -103,10 +103,21 @@
             padding: 10px 20px;
             cursor: pointer;
         }
+
+        /* 打乱按钮样式 */
+        .shuffle-button {
+            margin: 10px 0;
+            padding: 100px 20px;
+            cursor: pointer;
+            position: fixed;
+            bottom: 80px; /* 距离底部一定距离，确保在卡槽上方 */
+            z-index: 5;
+        }
     </style>
 </head>
 <body>
 <div id="timer">15:00</div>
+<button onclick="shuffleCards()">重新排列</button> <!-- 新增按钮 -->
 <div class="main"></div>
 <div class="move-list"></div>
 <div class="menu" id="gameOverMenu">
@@ -238,7 +249,7 @@
     function generateLevel() {
         // 随机打乱 simpleData 数组，并根据当前关卡数量选择卡牌类型
         const shuffledData = simpleData.sort(() => Math.random() - 0.5);
-        const cardTypes = Math.min(level + 6, simpleData.length);
+        const cardTypes = Math.min(level + 18, simpleData.length);
         const selectedCards = shuffledData.slice(0, cardTypes);
 
         // 根据当前关卡数量生成卡牌数
@@ -450,6 +461,35 @@
         }, 1000);
         checkDisabled();
     };
+
+    // 重新排列当前卡牌
+    function shuffleCards() {
+        const items = [...main.querySelectorAll('.item')];
+        if (items.length === 0) {
+            alert('当前没有可打乱的卡牌！');
+            return;
+        }
+
+        // 获取当前所有卡牌的内容（背景图和名称）
+        const cardData = items.map(item => ({
+            bg: item.style.backgroundImage,
+            name: item.textContent
+        }));
+
+        // 将卡牌内容打乱
+        cardData.sort(() => Math.random() - 0.5);
+
+        // 重新分配打乱后的内容到原有位置的卡牌元素上
+        items.forEach((item, index) => {
+            const card = cardData[index];
+            item.style.backgroundImage = card.bg;
+            item.textContent = card.name;
+        });
+
+        // 更新卡牌状态
+        checkDisabled();
+    }
+
     startNewLevel();
 </script>
 </body>
