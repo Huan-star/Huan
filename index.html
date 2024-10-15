@@ -238,14 +238,14 @@
     function generateLevel() {
         // 随机打乱 simpleData 数组，并根据当前关卡数量选择卡牌类型
         const shuffledData = simpleData.sort(() => Math.random() - 0.5);
-        const cardTypes = Math.min(level + 5, simpleData.length);
+        const cardTypes = Math.min(level + 6, simpleData.length);
         const selectedCards = shuffledData.slice(0, cardTypes);
 
         // 根据当前关卡数量生成卡牌数
         // const groups = 3 * level;
 
         // 每种卡牌张数
-        const groups = 6;
+        const groups = 9;
 
         // 从选定的卡牌类型中随机生成卡牌数据
         const renderData = Array.from(new Array(groups))
@@ -410,8 +410,8 @@
         }*/
 
         utterance.lang = 'zh-CN'; // 设置为中文普通话
-        utterance.pitch = 5; // 设置音调
-        utterance.rate = 1.2; // 可以稍微提高语速
+        utterance.pitch = 3; // 设置音调
+        utterance.rate = 1.05; // 可以稍微提高语速
         utterance.volume = 0.6; // 设置音量
 
         window.speechSynthesis.speak(utterance);
