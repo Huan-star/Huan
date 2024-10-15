@@ -398,16 +398,16 @@
         const utterance = new SpeechSynthesisUtterance(cardName);
         const voices = window.speechSynthesis.getVoices();
 
-        // 尝试选择一个更柔和的声音
+/*        // 尝试选择一个更柔和的声音,safari和百度用不了
         const softVoice = voices.find(voice =>
             voice.name.includes('Microsoft Xiaoxiao') ||
-            voice.name.includes('Samantha') ||
+            voice.name.includes('Samantha') ||  //safari的
             voice.name.includes('Female voice')
         );
 
         if (softVoice) {
             utterance.voice = softVoice;
-        }
+        }*/
 
         utterance.lang = 'zh-CN'; // 设置为中文普通话
         utterance.pitch = 5; // 设置音调
