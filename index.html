@@ -401,19 +401,17 @@
         // 尝试选择一个更柔和的声音
         const softVoice = voices.find(voice =>
             voice.name.includes('Microsoft Xiaoxiao') ||
-            voice.name.includes('Ting-Ting') ||
+            voice.name.includes('Samantha') ||
             voice.name.includes('Female voice')
         );
 
         if (softVoice) {
             utterance.voice = softVoice;
-        }else {
-            utterance.voice = voices[0]
         }
 
         utterance.lang = 'zh-CN'; // 设置为中文普通话
         utterance.pitch = 5; // 设置音调
-        utterance.rate = 1.5; // 可以稍微提高语速
+        utterance.rate = 1.2; // 可以稍微提高语速
         utterance.volume = 0.6; // 设置音量
 
         window.speechSynthesis.speak(utterance);
