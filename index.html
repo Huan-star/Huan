@@ -28,7 +28,7 @@
             align-items: center;
             z-index: 0;
             transition: left 0.2s, top 0.2s, transform 0.2s; /* 增加 transform 的过渡时间 */
-            width: 60px; /* 设置麻将块的宽度 */
+            width: 50px; /* 设置麻将块的宽度 */
             height: 105px; /* 设置麻将块的高度 */
             border-radius: 5px; /* 增加圆角效果 */
             box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.3); /* 设置阴影以增加立体感 */
@@ -116,7 +116,7 @@
     </style>
 </head>
 <body>
-<div id="timer">15:00</div>
+<div id="timer">10:00</div>
 <button onclick="shuffleCards()">重新排列</button> <!-- 新增按钮 -->
 <div class="main"></div>
 <div class="move-list"></div>
@@ -128,32 +128,32 @@
 
 <script>
     const simpleData = [
-        { name: "刷子", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116110857_67329.jpg" },
-        { name: "奶瓶", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111114_92056.jpg" },
-        { name: "玉米", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111348_83578.jpg" },
-        { name: "粪叉", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116110838_97880.jpg" },
-        { name: "小草", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111500_79089.jpg" },
-        { name: "白菜", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111105_26982.jpg" },
-        { name: "草垛", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116110823_14228.jpg" },
-        { name: "木墩", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111019_19911.jpg" },
-        { name: "胡萝卜", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111509_62273.jpg" },
-        { name: "铃铛", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111517_86581.jpg" },
-        { name: "棉花", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111527_63174.jpg" },
-        { name: "小炭火", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111122_73680.jpg" },
-        { name: "水桶", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111356_67362.jpg" },
-        { name: "手套", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111404_35203.jpg" },
+        // { name: "刷子", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116110857_67329.jpg" },
+        // { name: "奶瓶", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111114_92056.jpg" },
+        // { name: "玉米", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111348_83578.jpg" },
+        // { name: "粪叉", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116110838_97880.jpg" },
+        // { name: "小草", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111500_79089.jpg" },
+        // { name: "白菜", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111105_26982.jpg" },
+        // { name: "草垛", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116110823_14228.jpg" },
+        // { name: "木墩", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111019_19911.jpg" },
+        // { name: "胡萝卜", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111509_62273.jpg" },
+        // { name: "铃铛", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111517_86581.jpg" },
+        // { name: "棉花", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111527_63174.jpg" },
+        // { name: "小炭火", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111122_73680.jpg" },
+        // { name: "水桶", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111356_67362.jpg" },
+        // { name: "手套", color: "#335577", bg: "https://img.clinicmed.net/uploadimg/image/20221116/20221116111404_35203.jpg" },
 
-        { name: "树袋熊", color: "#335577", bg: "https://s2.loli.net/2024/10/15/RWIZFJNAwQXS6sb.png" },
-        { name: "小熊猫", color: "#335577", bg: "https://s2.loli.net/2024/10/15/sHIabcZyJdqpm91.png" },
-        { name: "河马", color: "#335577", bg: "https://s2.loli.net/2024/10/15/6RZNDOgCQlb9kxt.png" },
+        // { name: "树袋熊", color: "#335577", bg: "https://s2.loli.net/2024/10/15/RWIZFJNAwQXS6sb.png" },
+        // { name: "小熊猫", color: "#335577", bg: "https://s2.loli.net/2024/10/15/sHIabcZyJdqpm91.png" },
+        // { name: "河马", color: "#335577", bg: "https://s2.loli.net/2024/10/15/6RZNDOgCQlb9kxt.png" },
+        // { name: "大公鸡", color: "#335577", bg: "https://s2.loli.net/2024/10/15/9YXWQusSltOBAeo.png" },
+        // { name: "小狮子", color: "#335577", bg: "https://s2.loli.net/2024/10/15/WGTKP4gAfIjwRor.png" },
+        // { name: "小猪", color: "#335577", bg: "https://s2.loli.net/2024/10/15/kf1dYzhjTAvN8Sr.png" },
+        // { name: "小猴子", color: "#335577", bg: "https://s2.loli.net/2024/10/15/dgH7yDCBoarJcSt.png" },
         { name: "长颈鹿", color: "#335577", bg: "https://s2.loli.net/2024/10/15/rK8oaZmLg4CEIuT.png" },
-        { name: "大公鸡", color: "#335577", bg: "https://s2.loli.net/2024/10/15/9YXWQusSltOBAeo.png" },
         { name: "树懒", color: "#335577", bg: "https://s2.loli.net/2024/10/15/1mgjoGMnEPJNLZX.png" },
         { name: "小老虎", color: "#335577", bg: "https://s2.loli.net/2024/10/15/gXwLcHN6IpaeRSM.png" },
         { name: "小兔子", color: "#335577", bg: "https://s2.loli.net/2024/10/15/aFyWzIZNO168nP4.png" },
-        { name: "小狮子", color: "#335577", bg: "https://s2.loli.net/2024/10/15/WGTKP4gAfIjwRor.png" },
-        { name: "小猪", color: "#335577", bg: "https://s2.loli.net/2024/10/15/kf1dYzhjTAvN8Sr.png" },
-        { name: "小猴子", color: "#335577", bg: "https://s2.loli.net/2024/10/15/dgH7yDCBoarJcSt.png" },
 
         { name: "一筒", color: "#335577", bg: "https://s2.loli.net/2024/10/14/Sjc8N4ZPn9gqXKV.png" },
         { name: "二筒", color: "#335577", bg: "https://s2.loli.net/2024/10/14/8MWiNqyZPH5QaFI.png" },
@@ -198,7 +198,7 @@
         { name: "白板", color: "#335577", bg: "https://s2.loli.net/2024/10/14/aC9fbEochwRj6kM.png" },
         { name: "发财", color: "#335577", bg: "https://s2.loli.net/2024/10/14/ulmhPOZ19HGTfsW.png" },
 
-        { name: "汉堡包", color: "#335577", bg: "https://s2.loli.net/2024/10/15/5BDodpR8jH42GWC.jpg" },
+        // { name: "汉堡包", color: "#335577", bg: "https://s2.loli.net/2024/10/15/5BDodpR8jH42GWC.jpg" },
         { name: "可乐", color: "#335577", bg: "https://s2.loli.net/2024/10/15/yHSYrCWu3U7Dw94.png" },
         { name: "寿司", color: "#335577", bg: "https://s2.loli.net/2024/10/15/P6YGR9a8WAqNsri.png" },
         { name: "甜甜圈", color: "#335577", bg: "https://s2.loli.net/2024/10/15/bvgBZUEOQJD7juy.png" },
@@ -207,7 +207,7 @@
         { name: "冰淇淋", color: "#335577", bg: "https://s2.loli.net/2024/10/15/ovjQLe2i3H1OswE.png" },
         { name: "啤酒", color: "#335577", bg: "https://s2.loli.net/2024/10/15/S8daUWZNjsenluG.png" },
         { name: "热狗", color: "#335577", bg: "https://s2.loli.net/2024/10/15/L69gJCc3dfaqrWx.png" },
-        { name: "蛋糕", color: "#335577", bg: "https://s2.loli.net/2024/10/15/HkAbapuS15fMsVh.png" },
+        // { name: "蛋糕", color: "#335577", bg: "https://s2.loli.net/2024/10/15/HkAbapuS15fMsVh.png" },
         { name: "薯条", color: "#335577", bg: "https://s2.loli.net/2024/10/15/4crQLMuks5yt63R.png" },
 
         { name: "橘子", color: "#335577", bg: "https://s2.loli.net/2024/10/15/O7ZJelrsIy5iaF2.png" },
@@ -217,16 +217,81 @@
         { name: "柿子", color: "#335577", bg: "https://s2.loli.net/2024/10/15/iElRjV3dsa9BfAg.png" },
         { name: "哈密瓜", color: "#335577", bg: "https://s2.loli.net/2024/10/15/3kGlCmoF1YbtKvj.png" },
         { name: "葡萄", color: "#335577", bg: "https://s2.loli.net/2024/10/15/yJZe1LcGzInDKx8.png" },
-        { name: "无花果", color: "#335577", bg: "https://s2.loli.net/2024/10/15/7OINCRAjtlLe5w8.png" }
+        { name: "无花果", color: "#335577", bg: "https://s2.loli.net/2024/10/15/7OINCRAjtlLe5w8.png" },
+
+        { name: "边牧犬", color: "#335577", bg: "https://s2.loli.net/2024/10/21/YOqKJ7REfBihXb1.png" },
+        { name: "红酒", color: "#335577", bg: "https://s2.loli.net/2024/10/21/OVFIq9Gj48HYdBo.png" },
+        { name: "火烈鸟", color: "#335577", bg: "https://s2.loli.net/2024/10/21/Hk3ET1XvOB2sC7S.png" },
+        { name: "柴犬", color: "#335577", bg: "https://s2.loli.net/2024/10/21/vbmJK1PX6qDwdLF.png" },
+        { name: "寄居蟹", color: "#335577", bg: "https://s2.loli.net/2024/10/21/HNILtsZ5y3q4wrf.png" },
+        { name: "卷心菜", color: "#335577", bg: "https://s2.loli.net/2024/10/21/1af7FphXVt8GyUJ.png" },
+        { name: "风铃花", color: "#335577", bg: "https://s2.loli.net/2024/10/21/83245d1WuPtTNvY.png" },
+        { name: "牛奶", color: "#335577", bg: "https://s2.loli.net/2024/10/21/bM1JsfmA3xlBDjF.png" },
+        { name: "草莓蛋糕", color: "#335577", bg: "https://s2.loli.net/2024/10/21/wpUJdHgho1LFrDR.png" },
+        { name: "企鹅", color: "#335577", bg: "https://s2.loli.net/2024/10/21/QEnfxjtJ8kbBe9D.png" },
+        { name: "羊驼", color: "#335577", bg: "https://s2.loli.net/2024/10/21/Pax6Xsw8Quot4qO.png" },
+        { name: "青蛙", color: "#335577", bg: "https://s2.loli.net/2024/10/21/tM2nh37IZ8HivzR.png" },
+        { name: "瑞士糖", color: "#335577", bg: "https://s2.loli.net/2024/10/21/wEjFOaSYyXocbuf.png" },
+        { name: "洋葱", color: "#335577", bg: "https://s2.loli.net/2024/10/21/YfmBNn285RUi9T7.png" },
+        { name: "天鹅", color: "#335577", bg: "https://s2.loli.net/2024/10/21/PxfoyNKa3EF4bOn.png" },
+        { name: "足球", color: "#335577", bg: "https://s2.loli.net/2024/10/21/KXAtLOdUhi1gjvq.png" },
+
+        { name: "八爪鱼", color: "#335577", bg: "https://s2.loli.net/2024/10/21/wAfhsvN3bFn17Kr.png" },
+        { name: "白菜", color: "#335577", bg: "https://s2.loli.net/2024/10/21/hQDip9VZSFJNy75.png" },
+        { name: "灯笼", color: "#335577", bg: "https://s2.loli.net/2024/10/21/CROf5uGKcdLrI8A.png" },
+        { name: "电视机", color: "#335577", bg: "https://s2.loli.net/2024/10/21/yNk6rPiE8mRjLCl.png" },
+        { name: "布丁", color: "#335577", bg: "https://s2.loli.net/2024/10/21/4U6Fbyh7AaEW8ng.png" },
+        { name: "浣熊", color: "#335577", bg: "https://s2.loli.net/2024/10/21/kVWHqp8oLgj6BK1.png" },
+        { name: "丁香花", color: "#335577", bg: "https://s2.loli.net/2024/10/21/cE9lSXTP7vy8Qu3.png" },
+        { name: "菠萝派", color: "#335577", bg: "https://s2.loli.net/2024/10/21/xclAP79j2qBwuYh.png" },
+        { name: "杜鹃花", color: "#335577", bg: "https://s2.loli.net/2024/10/21/unqmEMZWetSaK53.png" },
+        { name: "河马", color: "#335577", bg: "https://s2.loli.net/2024/10/21/4FrGU1IabJoTfVv.png" },
+
+        { name: "轮胎", color: "#335577", bg: "https://s2.loli.net/2024/10/21/1PkjJuNyOAoM3WT.png" },
+        { name: "卡皮巴拉", color: "#335577", bg: "https://s2.loli.net/2024/10/21/B4f5gcJLAhylV2j.png" },
+        { name: "鲸鱼", color: "#335577", bg: "https://s2.loli.net/2024/10/21/vP9cJaUFAthoVz2.png" },
+        { name: "口红", color: "#335577", bg: "https://s2.loli.net/2024/10/21/9O68TYxEnA1joNR.png" },
+        { name: "奶酪", color: "#335577", bg: "https://s2.loli.net/2024/10/21/9Dus58axIfbVXJm.png" },
+        { name: "毛驴", color: "#335577", bg: "https://s2.loli.net/2024/10/21/TXDMHKNnlx5gjP1.png" },
+        { name: "铅笔", color: "#335577", bg: "https://s2.loli.net/2024/10/21/OqPb2FMuDQsyvlG.png" },
+        { name: "鸟尾花", color: "#335577", bg: "https://s2.loli.net/2024/10/21/SZBTshoLtWpQGku.png" },
+        { name: "篮球", color: "#335577", bg: "https://s2.loli.net/2024/10/21/LPFOHin5Dkpua2K.png" },
+        { name: "奶牛", color: "#335577", bg: "https://s2.loli.net/2024/10/21/ZCpQAELenR7OSib.png" },
+        { name: "手表", color: "#335577", bg: "https://s2.loli.net/2024/10/21/aO2TiVxYGfj6bL8.png" },
+        { name: "西兰花", color: "#335577", bg: "https://s2.loli.net/2024/10/21/gi7NUsYdj8t15Ey.png" },
+        { name: "巧克力冰淇淋", color: "#335577", bg: "https://s2.loli.net/2024/10/21/3JnHIsojPrNkmAx.png" },
+        { name: "泰迪", color: "#335577", bg: "https://s2.loli.net/2024/10/21/UuL8aMy2OtlR3VA.png" },
+        { name: "香肠", color: "#335577", bg: "https://s2.loli.net/2024/10/21/5Evz41t3snuYDjh.png" },
+        { name: "热狗", color: "#335577", bg: "https://s2.loli.net/2024/10/21/34MJkyelLqV8DIg.png" },
+        { name: "圣诞树", color: "#335577", bg: "https://s2.loli.net/2024/10/21/oi6jKFJ1sw83Zq9.png" },
+        { name: "甜甜圈", color: "#335577", bg: "https://s2.loli.net/2024/10/21/UZvwFQo5gSGaiKb.png" },
+        { name: "水壶", color: "#335577", bg: "https://s2.loli.net/2024/10/21/B5mURQ4qrf9MPJl.png" },
+        { name: "土豆", color: "#335577", bg: "https://s2.loli.net/2024/10/21/2zrmplyjbJhoSic.png" },
+        { name: "小浣熊", color: "#335577", bg: "https://s2.loli.net/2024/10/21/17PrF9cYgTqQn8U.png" },
+        { name: "小熊", color: "#335577", bg: "https://s2.loli.net/2024/10/21/yI2lQ8rBYDUXgpu.png" },
+        { name: "小鸭", color: "#335577", bg: "https://s2.loli.net/2024/10/21/ClIjRQzDyu5MT96.png" },
+        { name: "小狮子", color: "#335577", bg: "https://s2.loli.net/2024/10/21/XFnPGI7chg3dopB.png" },
+        { name: "小龙虾", color: "#335577", bg: "https://s2.loli.net/2024/10/21/JcqMxTQRWB7zj3N.png" },
+        { name: "鸢尾花", color: "#335577", bg: "https://s2.loli.net/2024/10/21/GvThWcgiIDSP4d2.png" },
+        { name: "小熊猫", color: "#335577", bg: "https://s2.loli.net/2024/10/21/259JfXQsERduzGK.png" },
+        { name: "小象", color: "#335577", bg: "https://s2.loli.net/2024/10/21/UVJBd6Iq2PDGihf.png" },
+        { name: "玉米", color: "#335577", bg: "https://s2.loli.net/2024/10/21/cACBlQL57RGDZ8p.png" },
+        { name: "小鸡", color: "#335577", bg: "https://s2.loli.net/2024/10/21/wHuQrEePLTIxp2g.png" },
+        { name: "章鱼", color: "#335577", bg: "https://s2.loli.net/2024/10/21/VfCaB3AxXdiYtEG.png" },
+        { name: "纸杯蛋糕", color: "#335577", bg: "https://s2.loli.net/2024/10/21/vZzcCRo3QYSuPWk.png" },
+        { name: "仕", color: "#335577", bg: "https://s2.loli.net/2024/10/21/W4KudTvSgs9GLhQ.png" },
+        { name: "月亮", color: "#335577", bg: "https://s2.loli.net/2024/10/21/msftS5Xq2lwT98U.png" },
+        { name: "小兵", color: "#335577", bg: "https://s2.loli.net/2024/10/21/huZ7WX3sAIKPTr4.png" }
 
         // { name: "", color: "#335577", bg: "" },
+        // { name: "", color: "#335577", bg: "" }
     ];
 
-    const size = 40;
+    const size = 36;
     const rows = 10;
-    const cols = 10;
+    const cols = 8;
     const layerCount = 60;
-    const gameTimeLimit = 15 * 60;
+    const gameTimeLimit = 10 * 60;
     let gameTimeRemaining = gameTimeLimit;
     let timerInterval;
     let level = 1;
@@ -249,7 +314,7 @@
     function generateLevel() {
         // 随机打乱 simpleData 数组，并根据当前关卡数量选择卡牌类型
         const shuffledData = simpleData.sort(() => Math.random() - 0.5);
-        const cardTypes = Math.min(level + 18, simpleData.length);
+        const cardTypes = Math.min(level * 2 + 30, simpleData.length);
         const selectedCards = shuffledData.slice(0, cardTypes);
 
         // 根据当前关卡数量生成卡牌数
