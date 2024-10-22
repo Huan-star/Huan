@@ -1,561 +1,604 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>超级消不停</title>
-    <style>
-        * { box-sizing: border-box; }
-        body {
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 105vh;
-        }
-        .main { position: relative; }
-        /*让卡牌看起来更立体*/
-        .item {
-            position: absolute;
-            background: no-repeat center center #ffffff;
-            border: 1px solid #ddd;
-            background-size: 100%;
-            color: transparent;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 0;
-            transition: left 0.2s, top 0.2s, transform 0.2s; /* 增加 transform 的过渡时间 */
-            width: 50px; /* 设置麻将块的宽度 */
-            height: 105px; /* 设置麻将块的高度 */
-            border-radius: 5px; /* 增加圆角效果 */
-            box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.3); /* 设置阴影以增加立体感 */
-            transform: rotateY(0deg) rotateX(0deg) translateZ(0px); /* 初始化3D效果 */
-        }
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>超级消不停</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 105vh;
+    }
+    .main { position: relative; }
+    /*让卡牌看起来更立体*/
+    .item {
+      position: absolute;
+      background: no-repeat center center #ffffff;
+      border: 1px solid #ddd;
+      background-size: 100%;
+      color: transparent;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 0;
+      transition: left 0.2s, top 0.2s, transform 0.2s; /* 增加 transform 的过渡时间 */
+      width: 50px; /* 设置麻将块的宽度 */
+      height: 105px; /* 设置麻将块的高度 */
+      border-radius: 5px; /* 增加圆角效果 */
+      box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.3); /* 设置阴影以增加立体感 */
+      transform: rotateY(0deg) rotateX(0deg) translateZ(0px); /* 初始化3D效果 */
+    }
 
-        /*!*!* 鼠标悬停时的效果 *!*!*/
-        /*.item:hover {*/
-        /*    transform: rotateY(10deg) rotateX(5deg) translateZ(5px); !* 添加旋转和高度变化 *!*/
-        /*}*/
+    /*!*!* 鼠标悬停时的效果 *!*!*/
+    /*.item:hover {*/
+    /*    transform: rotateY(10deg) rotateX(5deg) translateZ(5px); !* 添加旋转和高度变化 *!*/
+    /*}*/
 
-        /* 为麻将块添加边框颜色和底部样式 */
-        .item::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            border: 1px solid #aaa; /* 添加边框颜色 */
-            border-radius: 5px; /* 确保边角是圆的 */
-            opacity: 0.3; /* 增加半透明效果 */
-            box-shadow: inset 0px 0px 5px rgba(0, 0, 0, 0.3); /* 内部阴影 */
-        }
+    /* 为麻将块添加边框颜色和底部样式 */
+    .item::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border: 1px solid #aaa; /* 添加边框颜色 */
+      border-radius: 5px; /* 确保边角是圆的 */
+      opacity: 0.3; /* 增加半透明效果 */
+      box-shadow: inset 0px 0px 5px rgba(0, 0, 0, 0.3); /* 内部阴影 */
+    }
 
-        /* 麻将块的内容样式 */
-        .item span {
-            font-size: 20px; /* 字体大小 */
-            color: #333; /* 字体颜色 */
-            position: relative;
-            z-index: 1; /* 确保文本位于前面 */
-        }
+    /* 麻将块的内容样式 */
+    .item span {
+      font-size: 20px; /* 字体大小 */
+      color: #333; /* 字体颜色 */
+      position: relative;
+      z-index: 1; /* 确保文本位于前面 */
+    }
 
-        .disabled {
-            opacity: 1; /* 调整麻将透明度 */
-            pointer-events: auto; /* 允许点击事件 */
-        }
+    .disabled {
+      opacity: 1; /* 调整麻将透明度 */
+      pointer-events: auto; /* 允许点击事件 */
+    }
 
-        .disabled:after {
-            background-color: rgba(0, 0, 0, 0.7);
-        }
+    .disabled:after {
+      background-color: rgba(0, 0, 0, 0.7);
+    }
 
-        /*卡槽设置*/
-        .move-list {
-            border: 1px solid #ddd;
-            background-color: #ddd;
-            margin: 0 auto;
-        }
+    /*卡槽设置*/
+    .move-list {
+      border: 1px solid #ddd;
+      background-color: #ddd;
+      margin: 0 auto;
+    }
 
-        /*倒计时设置*/
-        #timer {
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
+    /*倒计时设置*/
+    #timer {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
 
-        .menu {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: white;
-            border: 1px solid #ccc;
-            padding: 20px;
-            z-index: 10;
-        }
-        .menu button {
-            margin: 5px;
-            padding: 10px 20px;
-            cursor: pointer;
-        }
+    .menu {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: white;
+      border: 1px solid #ccc;
+      padding: 20px;
+      z-index: 10;
+    }
+    .menu button {
+      margin: 5px;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
 
-        /* 打乱按钮样式 */
-        .shuffle-button {
-            margin: 10px 0;
-            padding: 100px 20px;
-            cursor: pointer;
-            position: fixed;
-            bottom: 80px; /* 距离底部一定距离，确保在卡槽上方 */
-            z-index: 5;
-        }
-    </style>
+    /* 打乱按钮样式 */
+    .shuffle-button {
+      margin: 10px 0;
+      padding: 100px 20px;
+      cursor: pointer;
+      position: fixed;
+      bottom: 80px; /* 距离底部一定距离，确保在卡槽上方 */
+      z-index: 5;
+    }
+    /* 新增卡牌数量显示 */
+    .card-count {
+      position: absolute;
+      top: 0;
+      right: -100px; /* 使其与卡槽保持一定距离 */
+      font-size: 20px;
+      color: #1005;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
 </head>
 <body>
 <div id="timer">10:00</div>
 <button onclick="shuffleCards()">重新排列</button> <!-- 新增按钮 -->
 <div class="main"></div>
 <div class="move-list"></div>
+<div id="cardCount" style="position: absolute; bottom: 116px; right: 105; font-size: 15px;">卡牌数: 0</div>
 <div class="menu" id="gameOverMenu">
-    <h2>游戏结束</h2>
-    <button onclick="restartGame()">重新开始</button>
-    <button onclick="continueGame()">继续游戏</button>
+  <h2>游戏结束</h2>
+  <button onclick="restartGame()">重新开始</button>
+  <button onclick="continueGame()">继续游戏</button>
 </div>
 
 <script>
-    const simpleData = [
-        { name: "长颈鹿", color: "#335577", bg: "https://s2.loli.net/2024/10/15/rK8oaZmLg4CEIuT.png" },
-        { name: "树懒", color: "#335577", bg: "https://s2.loli.net/2024/10/15/1mgjoGMnEPJNLZX.png" },
-        { name: "小老虎", color: "#335577", bg: "https://s2.loli.net/2024/10/15/gXwLcHN6IpaeRSM.png" },
-        { name: "小浣熊", color: "#335577", bg: "https://s2.loli.net/2024/10/21/17PrF9cYgTqQn8U.png" },
-        { name: "小熊", color: "#335577", bg: "https://s2.loli.net/2024/10/21/yI2lQ8rBYDUXgpu.png" },
-        { name: "小鸭", color: "#335577", bg: "https://s2.loli.net/2024/10/21/ClIjRQzDyu5MT96.png" },
-        { name: "小狮子", color: "#335577", bg: "https://s2.loli.net/2024/10/21/XFnPGI7chg3dopB.png" },
-        { name: "小龙虾", color: "#335577", bg: "https://s2.loli.net/2024/10/21/JcqMxTQRWB7zj3N.png" },
+  const simpleData = [
+    // 动物
+    { name: "长颈鹿", color: "#335577", bg: "https://s2.loli.net/2024/10/15/rK8oaZmLg4CEIuT.png" },
+    { name: "树懒", color: "#335577", bg: "https://s2.loli.net/2024/10/15/1mgjoGMnEPJNLZX.png" },
+    { name: "小浣熊", color: "#335577", bg: "https://s2.loli.net/2024/10/21/17PrF9cYgTqQn8U.png" },
+    { name: "小熊", color: "#335577", bg: "https://s2.loli.net/2024/10/21/yI2lQ8rBYDUXgpu.png" },
+    { name: "小鸭", color: "#335577", bg: "https://s2.loli.net/2024/10/21/ClIjRQzDyu5MT96.png" },
+    { name: "小狮子", color: "#335577", bg: "https://s2.loli.net/2024/10/21/XFnPGI7chg3dopB.png" },
+    { name: "小龙虾", color: "#335577", bg: "https://s2.loli.net/2024/10/21/JcqMxTQRWB7zj3N.png" },
+    { name: "边牧犬", color: "#335577", bg: "https://s2.loli.net/2024/10/21/YOqKJ7REfBihXb1.png" },
+    { name: "火烈鸟", color: "#335577", bg: "https://s2.loli.net/2024/10/21/Hk3ET1XvOB2sC7S.png" },
+    { name: "柴犬", color: "#335577", bg: "https://s2.loli.net/2024/10/21/vbmJK1PX6qDwdLF.png" },
+    { name: "寄居蟹", color: "#335577", bg: "https://s2.loli.net/2024/10/21/HNILtsZ5y3q4wrf.png" },
+    { name: "企鹅", color: "#335577", bg: "https://s2.loli.net/2024/10/21/QEnfxjtJ8kbBe9D.png" },
+    { name: "羊驼", color: "#335577", bg: "https://s2.loli.net/2024/10/21/Pax6Xsw8Quot4qO.png" },
+    { name: "青蛙", color: "#335577", bg: "https://s2.loli.net/2024/10/21/tM2nh37IZ8HivzR.png" },
+    { name: "天鹅", color: "#335577", bg: "https://s2.loli.net/2024/10/21/PxfoyNKa3EF4bOn.png" },
+    { name: "八爪鱼", color: "#335577", bg: "https://s2.loli.net/2024/10/21/wAfhsvN3bFn17Kr.png" },
+    { name: "浣熊", color: "#335577", bg: "https://s2.loli.net/2024/10/21/kVWHqp8oLgj6BK1.png" },
+    { name: "河马", color: "#335577", bg: "https://s2.loli.net/2024/10/21/4FrGU1IabJoTfVv.png" },
+    { name: "卡皮巴拉", color: "#335577", bg: "https://s2.loli.net/2024/10/21/B4f5gcJLAhylV2j.png" },
+    { name: "鲸鱼", color: "#335577", bg: "https://s2.loli.net/2024/10/21/vP9cJaUFAthoVz2.png" },
+    { name: "毛驴", color: "#335577", bg: "https://s2.loli.net/2024/10/21/TXDMHKNnlx5gjP1.png" },
+    { name: "奶牛", color: "#335577", bg: "https://s2.loli.net/2024/10/21/ZCpQAELenR7OSib.png" },
+    { name: "泰迪", color: "#335577", bg: "https://s2.loli.net/2024/10/21/UuL8aMy2OtlR3VA.png" },
+    { name: "小熊猫", color: "#335577", bg: "https://s2.loli.net/2024/10/21/259JfXQsERduzGK.png" },
+    { name: "小象", color: "#335577", bg: "https://s2.loli.net/2024/10/21/UVJBd6Iq2PDGihf.png" },
+    { name: "小鸡", color: "#335577", bg: "https://s2.loli.net/2024/10/21/wHuQrEePLTIxp2g.png" },
+    { name: "章鱼", color: "#335577", bg: "https://s2.loli.net/2024/10/21/VfCaB3AxXdiYtEG.png" },
+    { name: "仓鼠", color: "#335577", bg: "https://s2.loli.net/2024/10/21/rGsWbyEXRJdHgjl.png" },
+    { name: "鹦鹉", color: "#335577", bg: "https://s2.loli.net/2024/10/21/mozuXkUOKjEClxs.png" },
+    { name: "小马", color: "#335577", bg: "https://s2.loli.net/2024/10/21/gvaXR2KPGknHMoz.png" },
+    { name: "小兔子", color: "#335577", bg: "https://s2.loli.net/2024/10/21/ranXuqeETRtSk4w.png" },
+    { name: "小老虎", color: "#335577", bg: "https://s2.loli.net/2024/10/21/ABpnq7RKFNmJf26.png" },
+    { name: "猫头鹰", color: "#335577", bg: "https://s2.loli.net/2024/10/21/BQ4k8uJAz7NROr6.png" },
+    { name: "鸵鸟", color: "#335577", bg: "https://s2.loli.net/2024/10/21/kI4XfYpVOvqce5s.png" },
+    { name: "土拨鼠", color: "#335577", bg: "https://s2.loli.net/2024/10/21/Y6cqk71gMFlSNui.png" },
 
-        { name: "一筒", color: "#335577", bg: "https://s2.loli.net/2024/10/14/Sjc8N4ZPn9gqXKV.png" },
-        { name: "二筒", color: "#335577", bg: "https://s2.loli.net/2024/10/14/8MWiNqyZPH5QaFI.png" },
-        { name: "三筒", color: "#335577", bg: "https://s2.loli.net/2024/10/14/xXqIjnaKA2ms3FJ.png" },
-        { name: "四筒", color: "#335577", bg: "https://s2.loli.net/2024/10/14/6IH7qhoFpfkZLVt.png" },
-        { name: "五筒", color: "#335577", bg: "https://s2.loli.net/2024/10/14/zaGE5dsljTQoCfk.png" },
-        { name: "六筒", color: "#335577", bg: "https://s2.loli.net/2024/10/14/1YHsW3t4wnhGXfc.png" },
-        { name: "七筒", color: "#335577", bg: "https://s2.loli.net/2024/10/14/pixoEsS6jVyrYLf.png" },
-        { name: "八筒", color: "#335577", bg: "https://s2.loli.net/2024/10/14/tkuyd3XbfoHasMP.png" },
-        { name: "九筒", color: "#335577", bg: "https://s2.loli.net/2024/10/14/DgT8jVUQByl2e3J.png" },
+    // 麻将
+    { name: "一筒", color: "#335577", bg: "https://s2.loli.net/2024/10/14/Sjc8N4ZPn9gqXKV.png" },
+    { name: "二筒", color: "#335577", bg: "https://s2.loli.net/2024/10/14/8MWiNqyZPH5QaFI.png" },
+    { name: "三筒", color: "#335577", bg: "https://s2.loli.net/2024/10/14/xXqIjnaKA2ms3FJ.png" },
+    { name: "四筒", color: "#335577", bg: "https://s2.loli.net/2024/10/14/6IH7qhoFpfkZLVt.png" },
+    { name: "五筒", color: "#335577", bg: "https://s2.loli.net/2024/10/14/zaGE5dsljTQoCfk.png" },
+    { name: "六筒", color: "#335577", bg: "https://s2.loli.net/2024/10/14/1YHsW3t4wnhGXfc.png" },
+    { name: "七筒", color: "#335577", bg: "https://s2.loli.net/2024/10/14/pixoEsS6jVyrYLf.png" },
+    { name: "八筒", color: "#335577", bg: "https://s2.loli.net/2024/10/14/tkuyd3XbfoHasMP.png" },
+    { name: "九筒", color: "#335577", bg: "https://s2.loli.net/2024/10/14/DgT8jVUQByl2e3J.png" },
+    { name: "幺鸡", color: "#335577", bg: "https://s2.loli.net/2024/10/14/48Gp5m3E2nlUBeQ.png" },
+    { name: "二条", color: "#335577", bg: "https://s2.loli.net/2024/10/14/htBUSevOmyjcVl3.png" },
+    { name: "三条", color: "#335577", bg: "https://s2.loli.net/2024/10/14/IAisPdnaTWV3b29.png" },
+    { name: "四条", color: "#335577", bg: "https://s2.loli.net/2024/10/14/hExlsAYnJy13Mug.png" },
+    { name: "五条", color: "#335577", bg: "https://s2.loli.net/2024/10/14/Xx9MyEmcbehUFTH.png" },
+    { name: "六条", color: "#335577", bg: "https://s2.loli.net/2024/10/14/dzNWxnYu5kmSjAI.png" },
+    { name: "七条", color: "#335577", bg: "https://s2.loli.net/2024/10/14/vgOFXS9wRMAd6LD.png" },
+    { name: "八条", color: "#335577", bg: "https://s2.loli.net/2024/10/14/PrOQuIkLJWFaE1q.png" },
+    { name: "九条", color: "#335577", bg: "https://s2.loli.net/2024/10/14/x7qMuK9QETw5FhV.png" },
+    { name: "一万", color: "#335577", bg: "https://s2.loli.net/2024/10/14/YHiwKjW7PqAbTp9.png" },
+    { name: "二万", color: "#335577", bg: "https://s2.loli.net/2024/10/14/SmkEZ1zJTs3xMbe.png" },
+    { name: "三万", color: "#335577", bg: "https://s2.loli.net/2024/10/14/ZnAQauz4vyMSjTV.png" },
+    { name: "四万", color: "#335577", bg: "https://s2.loli.net/2024/10/14/iCcJvdMZk8VpEFQ.png" },
+    { name: "五万", color: "#335577", bg: "https://s2.loli.net/2024/10/14/DRzX9kvNVIQYpqt.png" },
+    { name: "六万", color: "#335577", bg: "https://s2.loli.net/2024/10/14/8wa9VRqlKPDpnd7.png" },
+    { name: "七万", color: "#335577", bg: "https://s2.loli.net/2024/10/14/G7fkdmxJr2MTD8L.png" },
+    { name: "八万", color: "#335577", bg: "https://s2.loli.net/2024/10/14/t37PsCvz4oaHFyR.png" },
+    { name: "九万", color: "#335577", bg: "https://s2.loli.net/2024/10/14/wudQi7nL3HXO4Fq.png" },
+    { name: "梅花", color: "#335577", bg: "https://s2.loli.net/2024/10/14/cajB9rfECkRHAOI.png" },
+    { name: "兰花", color: "#335577", bg: "https://s2.loli.net/2024/10/14/xHt5JXjsR3gCGhA.png" },
+    { name: "竹子", color: "#335577", bg: "https://s2.loli.net/2024/10/14/Sj5wNxGry1AlgW9.png" },
+    { name: "菊花", color: "#335577", bg: "https://s2.loli.net/2024/10/14/5YKrcjPTv9LJBhC.png" },
+    { name: "东风", color: "#335577", bg: "https://s2.loli.net/2024/10/14/8eoNf1YRguwcU7Z.png" },
+    { name: "西风", color: "#335577", bg: "https://s2.loli.net/2024/10/14/N23vuDdCk8lISR9.png" },
+    { name: "南风", color: "#335577", bg: "https://s2.loli.net/2024/10/14/htgJEX2W36dMnYl.png" },
+    { name: "北风", color: "#335577", bg: "https://s2.loli.net/2024/10/14/e7nBJ6dr3fmX9RG.png" },
+    { name: "红中", color: "#335577", bg: "https://s2.loli.net/2024/10/14/9qaAWMfb6c5hxek.png" },
+    { name: "白板", color: "#335577", bg: "https://s2.loli.net/2024/10/14/aC9fbEochwRj6kM.png" },
+    { name: "发财", color: "#335577", bg: "https://s2.loli.net/2024/10/14/ulmhPOZ19HGTfsW.png" },
 
-        { name: "幺鸡", color: "#335577", bg: "https://s2.loli.net/2024/10/14/48Gp5m3E2nlUBeQ.png" },
-        { name: "二条", color: "#335577", bg: "https://s2.loli.net/2024/10/14/htBUSevOmyjcVl3.png" },
-        { name: "三条", color: "#335577", bg: "https://s2.loli.net/2024/10/14/IAisPdnaTWV3b29.png" },
-        { name: "四条", color: "#335577", bg: "https://s2.loli.net/2024/10/14/hExlsAYnJy13Mug.png" },
-        { name: "五条", color: "#335577", bg: "https://s2.loli.net/2024/10/14/Xx9MyEmcbehUFTH.png" },
-        { name: "六条", color: "#335577", bg: "https://s2.loli.net/2024/10/14/dzNWxnYu5kmSjAI.png" },
-        { name: "七条", color: "#335577", bg: "https://s2.loli.net/2024/10/14/vgOFXS9wRMAd6LD.png" },
-        { name: "八条", color: "#335577", bg: "https://s2.loli.net/2024/10/14/PrOQuIkLJWFaE1q.png" },
-        { name: "九条", color: "#335577", bg: "https://s2.loli.net/2024/10/14/x7qMuK9QETw5FhV.png" },
+    // 食物
+    { name: "寿司", color: "#335577", bg: "https://s2.loli.net/2024/10/15/P6YGR9a8WAqNsri.png" },
+    { name: "牛排", color: "#335577", bg: "https://s2.loli.net/2024/10/15/d1wSVYUfEcenqQl.png" },
+    { name: "三明治", color: "#335577", bg: "https://s2.loli.net/2024/10/15/gf14LRae7iJtk9B.png" },
+    { name: "面包", color: "#335577", bg: "https://s2.loli.net/2024/10/15/L69gJCc3dfaqrWx.png" },
+    { name: "薯条", color: "#335577", bg: "https://s2.loli.net/2024/10/15/4crQLMuks5yt63R.png" },
+    { name: "草莓蛋糕", color: "#335577", bg: "https://s2.loli.net/2024/10/21/wpUJdHgho1LFrDR.png" },
+    { name: "瑞士糖", color: "#335577", bg: "https://s2.loli.net/2024/10/21/wEjFOaSYyXocbuf.png" },
+    { name: "布丁", color: "#335577", bg: "https://s2.loli.net/2024/10/21/4U6Fbyh7AaEW8ng.png" },
+    { name: "菠萝派", color: "#335577", bg: "https://s2.loli.net/2024/10/21/xclAP79j2qBwuYh.png" },
+    { name: "奶酪", color: "#335577", bg: "https://s2.loli.net/2024/10/21/9Dus58axIfbVXJm.png" },
+    { name: "巧克力冰淇淋", color: "#335577", bg: "https://s2.loli.net/2024/10/21/3JnHIsojPrNkmAx.png" },
+    { name: "香肠", color: "#335577", bg: "https://s2.loli.net/2024/10/21/5Evz41t3snuYDjh.png" },
+    { name: "热狗", color: "#335577", bg: "https://s2.loli.net/2024/10/21/34MJkyelLqV8DIg.png" },
+    { name: "甜甜圈", color: "#335577", bg: "https://s2.loli.net/2024/10/21/UZvwFQo5gSGaiKb.png" },
+    { name: "纸杯蛋糕", color: "#335577", bg: "https://s2.loli.net/2024/10/21/vZzcCRo3QYSuPWk.png" },
+    { name: "烤鸡", color: "#335577", bg: "https://s2.loli.net/2024/10/21/2ZxRrvmOAtVUdSy.png" },
+    { name: "煎蛋", color: "#335577", bg: "https://s2.loli.net/2024/10/21/SQY8l2oudObcikF.png" },
+    { name: "黄油", color: "#335577", bg: "https://s2.loli.net/2024/10/21/NIKARxFTvPtuwSd.png" },
+    { name: "饭团", color: "#335577", bg: "https://s2.loli.net/2024/10/21/48n2aZwQTfu1KPy.png" },
+    { name: "巧克力", color: "#335577", bg: "https://s2.loli.net/2024/10/21/EYm1oC6pyWb84qx.png" },
 
-        { name: "一万", color: "#335577", bg: "https://s2.loli.net/2024/10/14/YHiwKjW7PqAbTp9.png" },
-        { name: "二万", color: "#335577", bg: "https://s2.loli.net/2024/10/14/SmkEZ1zJTs3xMbe.png" },
-        { name: "三万", color: "#335577", bg: "https://s2.loli.net/2024/10/14/ZnAQauz4vyMSjTV.png" },
-        { name: "四万", color: "#335577", bg: "https://s2.loli.net/2024/10/14/iCcJvdMZk8VpEFQ.png" },
-        { name: "五万", color: "#335577", bg: "https://s2.loli.net/2024/10/14/DRzX9kvNVIQYpqt.png" },
-        { name: "六万", color: "#335577", bg: "https://s2.loli.net/2024/10/14/8wa9VRqlKPDpnd7.png" },
-        { name: "七万", color: "#335577", bg: "https://s2.loli.net/2024/10/14/G7fkdmxJr2MTD8L.png" },
-        { name: "八万", color: "#335577", bg: "https://s2.loli.net/2024/10/14/t37PsCvz4oaHFyR.png" },
-        { name: "九万", color: "#335577", bg: "https://s2.loli.net/2024/10/14/wudQi7nL3HXO4Fq.png" },
+    // 饮品
+    { name: "红茶", color: "#335577", bg: "https://s2.loli.net/2024/10/21/69eHEZ8M3aLlywB.png" },
+    { name: "啤酒", color: "#335577", bg: "https://s2.loli.net/2024/10/15/S8daUWZNjsenluG.png" },
+    { name: "可乐", color: "#335577", bg: "https://s2.loli.net/2024/10/15/yHSYrCWu3U7Dw94.png" },
+    { name: "红酒", color: "#335577", bg: "https://s2.loli.net/2024/10/21/OVFIq9Gj48HYdBo.png" },
+    { name: "牛奶", color: "#335577", bg: "https://s2.loli.net/2024/10/21/bM1JsfmA3xlBDjF.png" },
 
-        { name: "梅花", color: "#335577", bg: "https://s2.loli.net/2024/10/14/cajB9rfECkRHAOI.png" },
-        { name: "兰花", color: "#335577", bg: "https://s2.loli.net/2024/10/14/xHt5JXjsR3gCGhA.png" },
-        { name: "竹子", color: "#335577", bg: "https://s2.loli.net/2024/10/14/Sj5wNxGry1AlgW9.png" },
-        { name: "菊花", color: "#335577", bg: "https://s2.loli.net/2024/10/14/5YKrcjPTv9LJBhC.png" },
+    // 蔬菜
+    { name: "洋葱", color: "#335577", bg: "https://s2.loli.net/2024/10/21/YfmBNn285RUi9T7.png" },
+    { name: "白菜", color: "#335577", bg: "https://s2.loli.net/2024/10/21/hQDip9VZSFJNy75.png" },
+    { name: "西兰花", color: "#335577", bg: "https://s2.loli.net/2024/10/21/gi7NUsYdj8t15Ey.png" },
+    { name: "土豆", color: "#335577", bg: "https://s2.loli.net/2024/10/21/2zrmplyjbJhoSic.png" },
+    { name: "玉米", color: "#335577", bg: "https://s2.loli.net/2024/10/21/cACBlQL57RGDZ8p.png" },
+    { name: "卷心菜", color: "#335577", bg: "https://s2.loli.net/2024/10/21/1af7FphXVt8GyUJ.png" },
+    { name: "南瓜", color: "#335577", bg: "https://s2.loli.net/2024/10/21/GWnoVZSikLQtd9Y.png" },
 
-        { name: "东风", color: "#335577", bg: "https://s2.loli.net/2024/10/14/8eoNf1YRguwcU7Z.png" },
-        { name: "西风", color: "#335577", bg: "https://s2.loli.net/2024/10/14/N23vuDdCk8lISR9.png" },
-        { name: "南风", color: "#335577", bg: "https://s2.loli.net/2024/10/14/htgJEX2W36dMnYl.png" },
-        { name: "北风", color: "#335577", bg: "https://s2.loli.net/2024/10/14/e7nBJ6dr3fmX9RG.png" },
-        { name: "红中", color: "#335577", bg: "https://s2.loli.net/2024/10/14/9qaAWMfb6c5hxek.png" },
-        { name: "白板", color: "#335577", bg: "https://s2.loli.net/2024/10/14/aC9fbEochwRj6kM.png" },
-        { name: "发财", color: "#335577", bg: "https://s2.loli.net/2024/10/14/ulmhPOZ19HGTfsW.png" },
+    // 水果
+    { name: "橘子", color: "#335577", bg: "https://s2.loli.net/2024/10/15/O7ZJelrsIy5iaF2.png" },
+    { name: "桃子", color: "#335577", bg: "https://s2.loli.net/2024/10/15/pXOGbFWDLziUB1C.png" },
+    { name: "西瓜", color: "#335577", bg: "https://s2.loli.net/2024/10/15/XvlN6bxhKWuAqGY.png" },
+    { name: "柿子", color: "#335577", bg: "https://s2.loli.net/2024/10/15/iElRjV3dsa9BfAg.png" },
+    { name: "哈密瓜", color: "#335577", bg: "https://s2.loli.net/2024/10/15/3kGlCmoF1YbtKvj.png" },
+    { name: "葡萄", color: "#335577", bg: "https://s2.loli.net/2024/10/15/yJZe1LcGzInDKx8.png" },
+    { name: "无花果", color: "#335577", bg: "https://s2.loli.net/2024/10/15/7OINCRAjtlLe5w8.png" },
+    { name: "橙子", color: "#335577", bg: "https://s2.loli.net/2024/10/21/KfrsPHINGZ3aVyt.png" },
+    { name: "芒果", color: "#335577", bg: "https://s2.loli.net/2024/10/21/GiTHZcj4KJCWqu6.png" },
+    { name: "香蕉", color: "#335577", bg: "https://s2.loli.net/2024/10/21/v48plf71nHycs9Y.png" },
 
-        { name: "可乐", color: "#335577", bg: "https://s2.loli.net/2024/10/15/yHSYrCWu3U7Dw94.png" },
-        { name: "寿司", color: "#335577", bg: "https://s2.loli.net/2024/10/15/P6YGR9a8WAqNsri.png" },
-        { name: "甜甜圈", color: "#335577", bg: "https://s2.loli.net/2024/10/15/bvgBZUEOQJD7juy.png" },
-        { name: "牛排", color: "#335577", bg: "https://s2.loli.net/2024/10/15/d1wSVYUfEcenqQl.png" },
-        { name: "三明治", color: "#335577", bg: "https://s2.loli.net/2024/10/15/gf14LRae7iJtk9B.png" },
-        { name: "冰淇淋", color: "#335577", bg: "https://s2.loli.net/2024/10/15/ovjQLe2i3H1OswE.png" },
-        { name: "啤酒", color: "#335577", bg: "https://s2.loli.net/2024/10/15/S8daUWZNjsenluG.png" },
-        { name: "热狗", color: "#335577", bg: "https://s2.loli.net/2024/10/15/L69gJCc3dfaqrWx.png" },
-        { name: "薯条", color: "#335577", bg: "https://s2.loli.net/2024/10/15/4crQLMuks5yt63R.png" },
+    // 日用品
+    { name: "红灯笼", color: "#335577", bg: "https://s2.loli.net/2024/10/21/CROf5uGKcdLrI8A.png" },
+    { name: "电视机", color: "#335577", bg: "https://s2.loli.net/2024/10/21/yNk6rPiE8mRjLCl.png" },
+    { name: "轮胎", color: "#335577", bg: "https://s2.loli.net/2024/10/21/1PkjJuNyOAoM3WT.png" },
+    { name: "口红", color: "#335577", bg: "https://s2.loli.net/2024/10/21/9O68TYxEnA1joNR.png" },
+    { name: "铅笔", color: "#335577", bg: "https://s2.loli.net/2024/10/21/OqPb2FMuDQsyvlG.png" },
+    { name: "手表", color: "#335577", bg: "https://s2.loli.net/2024/10/21/aO2TiVxYGfj6bL8.png" },
+    { name: "圣诞树", color: "#335577", bg: "https://s2.loli.net/2024/10/21/oi6jKFJ1sw83Zq9.png" },
+    { name: "水壶", color: "#335577", bg: "https://s2.loli.net/2024/10/21/B5mURQ4qrf9MPJl.png" },
+    { name: "月亮", color: "#335577", bg: "https://s2.loli.net/2024/10/21/msftS5Xq2lwT98U.png" },
+    { name: "鞭炮", color: "#335577", bg: "https://s2.loli.net/2024/10/21/VstBeZLQor8C2FW.png" },
+    { name: "龙舟", color: "#335577", bg: "https://s2.loli.net/2024/10/21/2UnXGa58z3HV1Od.png" },
+    { name: "舞狮", color: "#335577", bg: "https://s2.loli.net/2024/10/21/Wo6riQGTePCb5AV.png" },
+    { name: "女士手表", color: "#335577", bg: "https://s2.loli.net/2024/10/21/H3FlC7URMiESv5A.png" },
+    { name: "音响", color: "#335577", bg: "https://s2.loli.net/2024/10/21/WCycViG9UKvjRgT.png" },
 
-        { name: "橘子", color: "#335577", bg: "https://s2.loli.net/2024/10/15/O7ZJelrsIy5iaF2.png" },
-        { name: "桃子", color: "#335577", bg: "https://s2.loli.net/2024/10/15/pXOGbFWDLziUB1C.png" },
-        { name: "西瓜", color: "#335577", bg: "https://s2.loli.net/2024/10/15/XvlN6bxhKWuAqGY.png" },
-        { name: "柿子", color: "#335577", bg: "https://s2.loli.net/2024/10/15/iElRjV3dsa9BfAg.png" },
-        { name: "哈密瓜", color: "#335577", bg: "https://s2.loli.net/2024/10/15/3kGlCmoF1YbtKvj.png" },
-        { name: "葡萄", color: "#335577", bg: "https://s2.loli.net/2024/10/15/yJZe1LcGzInDKx8.png" },
-        { name: "无花果", color: "#335577", bg: "https://s2.loli.net/2024/10/15/7OINCRAjtlLe5w8.png" },
+    // 球类
+    { name: "橄榄球", color: "#335577", bg: "https://s2.loli.net/2024/10/21/trFvNCTSgnz7uiy.png" },
+    { name: "足球", color: "#335577", bg: "https://s2.loli.net/2024/10/21/KXAtLOdUhi1gjvq.png" },
+    { name: "篮球", color: "#335577", bg: "https://s2.loli.net/2024/10/21/LPFOHin5Dkpua2K.png" },
 
-        { name: "边牧犬", color: "#335577", bg: "https://s2.loli.net/2024/10/21/YOqKJ7REfBihXb1.png" },
-        { name: "红酒", color: "#335577", bg: "https://s2.loli.net/2024/10/21/OVFIq9Gj48HYdBo.png" },
-        { name: "火烈鸟", color: "#335577", bg: "https://s2.loli.net/2024/10/21/Hk3ET1XvOB2sC7S.png" },
-        { name: "柴犬", color: "#335577", bg: "https://s2.loli.net/2024/10/21/vbmJK1PX6qDwdLF.png" },
-        { name: "寄居蟹", color: "#335577", bg: "https://s2.loli.net/2024/10/21/HNILtsZ5y3q4wrf.png" },
-        { name: "卷心菜", color: "#335577", bg: "https://s2.loli.net/2024/10/21/1af7FphXVt8GyUJ.png" },
-        { name: "风铃花", color: "#335577", bg: "https://s2.loli.net/2024/10/21/83245d1WuPtTNvY.png" },
-        { name: "牛奶", color: "#335577", bg: "https://s2.loli.net/2024/10/21/bM1JsfmA3xlBDjF.png" },
-        { name: "草莓蛋糕", color: "#335577", bg: "https://s2.loli.net/2024/10/21/wpUJdHgho1LFrDR.png" },
-        { name: "企鹅", color: "#335577", bg: "https://s2.loli.net/2024/10/21/QEnfxjtJ8kbBe9D.png" },
-        { name: "羊驼", color: "#335577", bg: "https://s2.loli.net/2024/10/21/Pax6Xsw8Quot4qO.png" },
-        { name: "青蛙", color: "#335577", bg: "https://s2.loli.net/2024/10/21/tM2nh37IZ8HivzR.png" },
-        { name: "瑞士糖", color: "#335577", bg: "https://s2.loli.net/2024/10/21/wEjFOaSYyXocbuf.png" },
-        { name: "洋葱", color: "#335577", bg: "https://s2.loli.net/2024/10/21/YfmBNn285RUi9T7.png" },
-        { name: "天鹅", color: "#335577", bg: "https://s2.loli.net/2024/10/21/PxfoyNKa3EF4bOn.png" },
-        { name: "足球", color: "#335577", bg: "https://s2.loli.net/2024/10/21/KXAtLOdUhi1gjvq.png" },
+    // 象棋
+    { name: "仕", color: "#335577", bg: "https://s2.loli.net/2024/10/21/W4KudTvSgs9GLhQ.png" },
+    { name: "小兵", color: "#335577", bg: "https://s2.loli.net/2024/10/21/huZ7WX3sAIKPTr4.png" },
+    { name: "大炮", color: "#335577", bg: "https://s2.loli.net/2024/10/21/8bWlQ4afxF9Uitv.png" },
 
-        { name: "八爪鱼", color: "#335577", bg: "https://s2.loli.net/2024/10/21/wAfhsvN3bFn17Kr.png" },
-        { name: "白菜", color: "#335577", bg: "https://s2.loli.net/2024/10/21/hQDip9VZSFJNy75.png" },
-        { name: "红灯笼", color: "#335577", bg: "https://s2.loli.net/2024/10/21/CROf5uGKcdLrI8A.png" },
-        { name: "电视机", color: "#335577", bg: "https://s2.loli.net/2024/10/21/yNk6rPiE8mRjLCl.png" },
-        { name: "布丁", color: "#335577", bg: "https://s2.loli.net/2024/10/21/4U6Fbyh7AaEW8ng.png" },
-        { name: "浣熊", color: "#335577", bg: "https://s2.loli.net/2024/10/21/kVWHqp8oLgj6BK1.png" },
-        { name: "丁香花", color: "#335577", bg: "https://s2.loli.net/2024/10/21/cE9lSXTP7vy8Qu3.png" },
-        { name: "菠萝派", color: "#335577", bg: "https://s2.loli.net/2024/10/21/xclAP79j2qBwuYh.png" },
-        { name: "杜鹃花", color: "#335577", bg: "https://s2.loli.net/2024/10/21/unqmEMZWetSaK53.png" },
-        { name: "河马", color: "#335577", bg: "https://s2.loli.net/2024/10/21/4FrGU1IabJoTfVv.png" },
+    // 花
+    { name: "丁香花", color: "#335577", bg: "https://s2.loli.net/2024/10/21/cE9lSXTP7vy8Qu3.png" },
+    { name: "风铃花", color: "#335577", bg: "https://s2.loli.net/2024/10/21/83245d1WuPtTNvY.png" },
+    { name: "杜鹃花", color: "#335577", bg: "https://s2.loli.net/2024/10/21/unqmEMZWetSaK53.png" },
+    { name: "鸟尾花", color: "#335577", bg: "https://s2.loli.net/2024/10/21/SZBTshoLtWpQGku.png" },
+    { name: "鸢尾花", color: "#335577", bg: "https://s2.loli.net/2024/10/21/GvThWcgiIDSP4d2.png" }
+    // { name: "", color: "#335577", bg: "" },
+  ];
 
-        { name: "轮胎", color: "#335577", bg: "https://s2.loli.net/2024/10/21/1PkjJuNyOAoM3WT.png" },
-        { name: "卡皮巴拉", color: "#335577", bg: "https://s2.loli.net/2024/10/21/B4f5gcJLAhylV2j.png" },
-        { name: "鲸鱼", color: "#335577", bg: "https://s2.loli.net/2024/10/21/vP9cJaUFAthoVz2.png" },
-        { name: "口红", color: "#335577", bg: "https://s2.loli.net/2024/10/21/9O68TYxEnA1joNR.png" },
-        { name: "奶酪", color: "#335577", bg: "https://s2.loli.net/2024/10/21/9Dus58axIfbVXJm.png" },
-        { name: "毛驴", color: "#335577", bg: "https://s2.loli.net/2024/10/21/TXDMHKNnlx5gjP1.png" },
-        { name: "铅笔", color: "#335577", bg: "https://s2.loli.net/2024/10/21/OqPb2FMuDQsyvlG.png" },
-        { name: "鸟尾花", color: "#335577", bg: "https://s2.loli.net/2024/10/21/SZBTshoLtWpQGku.png" },
-        { name: "篮球", color: "#335577", bg: "https://s2.loli.net/2024/10/21/LPFOHin5Dkpua2K.png" },
-        { name: "奶牛", color: "#335577", bg: "https://s2.loli.net/2024/10/21/ZCpQAELenR7OSib.png" },
-        { name: "手表", color: "#335577", bg: "https://s2.loli.net/2024/10/21/aO2TiVxYGfj6bL8.png" },
-        { name: "西兰花", color: "#335577", bg: "https://s2.loli.net/2024/10/21/gi7NUsYdj8t15Ey.png" },
-        { name: "巧克力冰淇淋", color: "#335577", bg: "https://s2.loli.net/2024/10/21/3JnHIsojPrNkmAx.png" },
-        { name: "泰迪", color: "#335577", bg: "https://s2.loli.net/2024/10/21/UuL8aMy2OtlR3VA.png" },
-        { name: "香肠", color: "#335577", bg: "https://s2.loli.net/2024/10/21/5Evz41t3snuYDjh.png" },
-        { name: "热狗", color: "#335577", bg: "https://s2.loli.net/2024/10/21/34MJkyelLqV8DIg.png" },
-        { name: "圣诞树", color: "#335577", bg: "https://s2.loli.net/2024/10/21/oi6jKFJ1sw83Zq9.png" },
-        { name: "甜甜圈", color: "#335577", bg: "https://s2.loli.net/2024/10/21/UZvwFQo5gSGaiKb.png" },
-        { name: "水壶", color: "#335577", bg: "https://s2.loli.net/2024/10/21/B5mURQ4qrf9MPJl.png" },
-        { name: "土豆", color: "#335577", bg: "https://s2.loli.net/2024/10/21/2zrmplyjbJhoSic.png" },
+  const size = 36;
+  const rows = 10;
+  const cols = 9;
+  const layerCount = 60;
+  const gameTimeLimit = 10 * 60;
+  let gameTimeRemaining = gameTimeLimit;
+  let timerInterval;
+  let level = 1;
 
-        { name: "鸢尾花", color: "#335577", bg: "https://s2.loli.net/2024/10/21/GvThWcgiIDSP4d2.png" },
-        { name: "小熊猫", color: "#335577", bg: "https://s2.loli.net/2024/10/21/259JfXQsERduzGK.png" },
-        { name: "小象", color: "#335577", bg: "https://s2.loli.net/2024/10/21/UVJBd6Iq2PDGihf.png" },
-        { name: "玉米", color: "#335577", bg: "https://s2.loli.net/2024/10/21/cACBlQL57RGDZ8p.png" },
-        { name: "小鸡", color: "#335577", bg: "https://s2.loli.net/2024/10/21/wHuQrEePLTIxp2g.png" },
-        { name: "章鱼", color: "#335577", bg: "https://s2.loli.net/2024/10/21/VfCaB3AxXdiYtEG.png" },
-        { name: "纸杯蛋糕", color: "#335577", bg: "https://s2.loli.net/2024/10/21/vZzcCRo3QYSuPWk.png" },
-        { name: "仕", color: "#335577", bg: "https://s2.loli.net/2024/10/21/W4KudTvSgs9GLhQ.png" },
-        { name: "月亮", color: "#335577", bg: "https://s2.loli.net/2024/10/21/msftS5Xq2lwT98U.png" },
-        { name: "小兵", color: "#335577", bg: "https://s2.loli.net/2024/10/21/huZ7WX3sAIKPTr4.png" },
+  const main = document.querySelector(".main");
+  const moveList = document.querySelector(".move-list");
+  const cardCountDisplay = document.getElementById("cardCount");
+  const timer = document.getElementById("timer");
+  const gameOverMenu = document.getElementById("gameOverMenu");
 
-        { name: "仓鼠", color: "#335577", bg: "https://s2.loli.net/2024/10/21/rGsWbyEXRJdHgjl.png" },
-        { name: "烤鸡", color: "#335577", bg: "https://s2.loli.net/2024/10/21/2ZxRrvmOAtVUdSy.png" },
-        { name: "红茶", color: "#335577", bg: "https://s2.loli.net/2024/10/21/69eHEZ8M3aLlywB.png" },
-        { name: "煎蛋", color: "#335577", bg: "https://s2.loli.net/2024/10/21/SQY8l2oudObcikF.png" },
-        { name: "黄油", color: "#335577", bg: "https://s2.loli.net/2024/10/21/NIKARxFTvPtuwSd.png" },
-        { name: "橙子", color: "#335577", bg: "https://s2.loli.net/2024/10/21/KfrsPHINGZ3aVyt.png" },
-        { name: "橄榄球", color: "#335577", bg: "https://s2.loli.net/2024/10/21/trFvNCTSgnz7uiy.png" },
-        { name: "大炮", color: "#335577", bg: "https://s2.loli.net/2024/10/21/8bWlQ4afxF9Uitv.png" },
-        { name: "鞭炮", color: "#335577", bg: "https://s2.loli.net/2024/10/21/VstBeZLQor8C2FW.png" },
-        { name: "饭团", color: "#335577", bg: "https://s2.loli.net/2024/10/21/48n2aZwQTfu1KPy.png" },
-        { name: "芒果", color: "#335577", bg: "https://s2.loli.net/2024/10/21/GiTHZcj4KJCWqu6.png" },
-        { name: "龙舟", color: "#335577", bg: "https://s2.loli.net/2024/10/21/2UnXGa58z3HV1Od.png" },
-        { name: "猫头鹰", color: "#335577", bg: "https://s2.loli.net/2024/10/21/BQ4k8uJAz7NROr6.png" },
-        { name: "南瓜", color: "#335577", bg: "https://s2.loli.net/2024/10/21/GWnoVZSikLQtd9Y.png" },
-        { name: "鸵鸟", color: "#335577", bg: "https://s2.loli.net/2024/10/21/kI4XfYpVOvqce5s.png" },
-        { name: "巧克力", color: "#335577", bg: "https://s2.loli.net/2024/10/21/EYm1oC6pyWb84qx.png" },
-        { name: "土拨鼠", color: "#335577", bg: "https://s2.loli.net/2024/10/21/Y6cqk71gMFlSNui.png" },
-        { name: "舞狮", color: "#335577", bg: "https://s2.loli.net/2024/10/21/Wo6riQGTePCb5AV.png" },
-        { name: "女士手表", color: "#335577", bg: "https://s2.loli.net/2024/10/21/H3FlC7URMiESv5A.png" },
-        { name: "香蕉", color: "#335577", bg: "https://s2.loli.net/2024/10/21/v48plf71nHycs9Y.png" },
-        { name: "鹦鹉", color: "#335577", bg: "https://s2.loli.net/2024/10/21/mozuXkUOKjEClxs.png" },
-        { name: "小马", color: "#335577", bg: "https://s2.loli.net/2024/10/21/gvaXR2KPGknHMoz.png" },
-        { name: "小兔子", color: "#335577", bg: "https://s2.loli.net/2024/10/21/ranXuqeETRtSk4w.png" },
-        { name: "小老虎", color: "#335577", bg: "https://s2.loli.net/2024/10/21/ABpnq7RKFNmJf26.png" },
-        { name: "音响", color: "#335577", bg: "https://s2.loli.net/2024/10/21/WCycViG9UKvjRgT.png" }
+  function startNewLevel() {
+    main.innerHTML = "";
+    moveList.innerHTML = "";
+    gameTimeRemaining = gameTimeLimit;
+    clearInterval(timerInterval);
+    startTimer();
+    generateLevel();
+    checkDisabled();
+  }
 
-        // { name: "", color: "#335577", bg: "" },
-    ];
+  function generateLevel() {
+    const shuffledData = simpleData.sort(() => Math.random() - 0.5);
+    const cardTypes = Math.min(level * 2 + 30, simpleData.length);
+    const selectedCards = shuffledData.slice(0, cardTypes);
+    const groups = 9;
 
-    const size = 36;
-    const rows = 10;
-    const cols = 9;
-    const layerCount = 60;
-    const gameTimeLimit = 10 * 60;
-    let gameTimeRemaining = gameTimeLimit;
-    let timerInterval;
-    let level = 1;
-
-    const main = document.querySelector(".main");
-    const moveList = document.querySelector(".move-list");
-    const timer = document.getElementById("timer");
-    const gameOverMenu = document.getElementById("gameOverMenu");
-
-    function startNewLevel() {
-        main.innerHTML = "";
-        moveList.innerHTML = "";
-        gameTimeRemaining = gameTimeLimit;
-        clearInterval(timerInterval);
-        startTimer();
-        generateLevel();
-        checkDisabled();
-    }
-
-    function generateLevel() {
-        // 随机打乱 simpleData 数组，并根据当前关卡数量选择卡牌类型
-        const shuffledData = simpleData.sort(() => Math.random() - 0.5);
-        const cardTypes = Math.min(level * 2 + 30, simpleData.length);
-        const selectedCards = shuffledData.slice(0, cardTypes);
-
-        // 根据当前关卡数量生成卡牌数
-        // const groups = 3 * level;
-
-        // 每种卡牌张数
-        const groups = 9;
-
-        // 从选定的卡牌类型中随机生成卡牌数据
-        const renderData = Array.from(new Array(groups))
+    const renderData = Array.from(new Array(groups))
             .flatMap(() => selectedCards.map(v => ({ ...v })))
             .sort(() => Math.random() - 0.5);
 
-        // 创建卡牌的 HTML 元素
-        const cellHtml = [];
+    const cellHtml = [];
 
-        for (let ly = layerCount - 1; ly >= 0; ly--) {
-            for (let i = 0; i < rows; i++) {
-                for (let j = 0; j < cols; j++) {
-                    let pyStep = (ly + 1) % 2 === 0 ? size / 2 : 0;
-                    let item = Math.random() > 0.7 && renderData.pop();
+    for (let ly = layerCount - 1; ly >= 0; ly--) {
+      for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < cols; j++) {
+          let pyStep = (ly + 1) % 2 === 0 ? size / 2 : 0;
+          let item = Math.random() > 0.7 && renderData.pop();
 
-                    item &&
-                    cellHtml.push(`<div class="item" onclick="move(this)" id="m${ly}-${i}-${j}"
-                              style="width:${size}px;height:${size * 1.15}px;left:${size * j + pyStep}px;top:${size * i + pyStep}px;background-image:url(${item.bg || ""})">${item.name || ""}</div>`);
-                }
-            }
+          if (item) {
+            cellHtml.push(`<div class="item" onclick="move(this)" id="m${ly}-${i}-${j}" style="width:${size}px;height:${size * 1.15}px;left:${size * j + pyStep}px;top:${size * i + pyStep}px;background-image:url(${item.bg || ""})">${item.name || ""}</div>`);
+          }
         }
-
-        // 设置主界面的内容和样式
-        main.innerHTML = cellHtml.reverse().join("");
-        main.style.height = `${size * rows + size * 2}px`;
-        main.style.width = `${size * cols}px`;
-        moveList.style.height = `${size}px`;
-        moveList.style.width = `${size * 7}px`;
+      }
     }
 
-    function startTimer() {
-        timerInterval = setInterval(() => {
-            let minutes = Math.floor(gameTimeRemaining / 60);
-            let seconds = gameTimeRemaining % 60;
-            timer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            gameTimeRemaining--;
+    main.innerHTML = cellHtml.reverse().join("");
+    main.style.height = `${size * rows + size * 2}px`;
+    main.style.width = `${size * cols}px`;
+    moveList.style.height = `${size}px`;
+    moveList.style.width = `${size * 7}px`;
 
-            if (gameTimeRemaining < 0) {
-                clearInterval(timerInterval);
-                showGameOverMenu("时间到，游戏结束");
-            }
-        }, 1000);
-    }
+    updateCardCount(); // 更新卡牌数量显示
+  }
 
-    const showGameOverMenu = (message) => {
-        alert(message);
-        gameOverMenu.style.display = 'flex';
+  //实时显示卡牌数目
+  function updateCardCount() {
+    const cardCount = main.children.length; // 获取当前卡牌数量
+    cardCountDisplay.textContent = `卡牌数: ${cardCount}`; // 更新显示文本
+  }
+
+  function startTimer() {
+    timerInterval = setInterval(() => {
+      let minutes = Math.floor(gameTimeRemaining / 60);
+      let seconds = gameTimeRemaining % 60;
+      timer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      gameTimeRemaining--;
+
+      if (gameTimeRemaining < 0) {
         clearInterval(timerInterval);
-    };
+        showGameOverMenu("时间到，游戏结束");
+      }
+    }, 1000);
+  }
 
-    const restartGame = () => {
-        level = 1;
-        startNewLevel();
-    };
+  const showGameOverMenu = (message) => {
+    alert(message);
+    gameOverMenu.style.display = 'flex';
+    clearInterval(timerInterval);
+  };
 
-    const continueGame = () => {
-        gameTimeRemaining += 60;
-        gameOverMenu.style.display = 'none';
-        startTimer();
-    };
-
-    // 检查被遮住的底牌需标暗色
-    const checkDisabled = (items) => {
-        (items || main.querySelectorAll(".item")).forEach((v, i) => {
-            const arr = v.id
-                .substring(1)
-                .split("-")
-                .map(v => Number(v));
-            const isPy = (arr[0] + 1) % 2 === 0;
-            for (let i = arr[0] + 1; i <= layerCount - 1; i++) {
-                const isPyB = (i + 1) % 2 === 0;
-                if (isPy === isPyB) {
-                    const el = main.querySelector(`#m${i}-${arr[1]}-${arr[2]}`);
-                    if (el) {
-                        v.classList.add("disabled");
-                        break;
-                    }
-                } else if (isPy && !isPyB) {
-                    if (
-                        ![
-                            `${i}-${arr[1]}-${arr[2]}`,
-                            `${i}-${arr[1]}-${arr[2] + 1}`,
-                            `${i}-${arr[1] + 1}-${arr[2]}`,
-                            `${i}-${arr[1] + 1}-${arr[2] + 1}`,
-                        ].every(k => {
-                            return !main.querySelector(`#m` + k);
-                        })
-                    ) {
-                        v.classList.add("disabled");
-                        break;
-                    } else {
-                        v.classList.remove("disabled");
-                    }
-                } else if (!isPy && isPyB) {
-                    if (
-                        ![
-                            `${i}-${arr[1]}-${arr[2]}`,
-                            `${i}-${arr[1]}-${arr[2] - 1}`,
-                            `${i}-${arr[1] - 1}-${arr[2]}`,
-                            `${i}-${arr[1] - 1}-${arr[2] - 1}`,
-                        ].every(k => {
-                            return !main.querySelector(`#m` + k);
-                        })
-                    ) {
-                        v.classList.add("disabled");
-                        break;
-                    } else {
-                        v.classList.remove("disabled");
-                    }
-                }
-            }
-        });
-    };
-
-    // 点击卡片进行消除计算
-    let canMove = true;
-    const move = (me) => {
-        let left = moveList.offsetLeft;
-        let top = moveList.offsetTop;
-        if (!canMove || me.className.indexOf("disabled") >= 0) {
-            return;
-        }
-        canMove = false;
-        if (moveList.children.length > 0) {
-            let el = moveList.children[moveList.children.length - 1];
-            left = el.offsetLeft + size;
-            top = el.offsetTop;
-        }
-        me.style.top = `${top}px`;
-        me.style.left = `${left}px`;
-        me.transitionNamesCount = 0;
-        me.ontransitionend = e => {
-            me.transitionNamesCount++;
-            if (me.transitionNamesCount === 2) {
-                moveEnd(me);
-                canMove = true;
-            }
-        };
-    };
-
-    // 语音播报函数
-
-/*    // 确保语音合成 API 加载完成
-    window.speechSynthesis.onvoiceschanged = function() {
-        const voices = window.speechSynthesis.getVoices();
-        console.log(voices); // 打印出所有可用的语音
-    };*/
-
-    function speakCardName(cardName) {
-        const utterance = new SpeechSynthesisUtterance(cardName);
-        const voices = window.speechSynthesis.getVoices();
-
-/*        // 尝试选择一个更柔和的声音,safari和百度用不了
-        const softVoice = voices.find(voice =>
-            voice.name.includes('Microsoft Xiaoxiao') ||
-            voice.name.includes('Samantha') ||  //safari的
-            voice.name.includes('Female voice')
-        );
-
-        if (softVoice) {
-            utterance.voice = softVoice;
-        }*/
-
-        utterance.lang = 'zh-CN'; // 设置为中文普通话
-        utterance.pitch = 0.90; // 设置音调
-        utterance.rate = 1.05; // 可以稍微提高语速
-        utterance.volume = 0.6; // 设置音量
-
-        window.speechSynthesis.speak(utterance);
-    }
-
-
-    // 动画结束的相关计算
-    const moveEnd = (me) => {
-        me.ontransitionend = null;
-        me.setAttribute("onclick", "");
-        moveList.appendChild(me);
-
-        const findResult = [...moveList.children].filter(
-            v => v.innerHTML === me.innerHTML
-        );
-        if (findResult.length === 3) {
-            speakCardName(me.innerHTML);
-            findResult.forEach(v => {
-                v.ontransitionend = e => {
-                    moveList.removeChild(v);
-                    [...moveList.children].forEach((v, i) => {
-                        v.style.left = `${i * size + moveList.offsetLeft}px`;
-                    });
-                };
-                setTimeout(() => (v.style.transform = "scale(0)"));
-            });
-        }
-        setTimeout(() => {
-            if (moveList.children.length === 8) {
-                showGameOverMenu("池子已满，游戏结束");
-            } else if (main.children.length === 0) {
-                alert(`恭喜通关第${level}关`);
-                level++;
-                startNewLevel();
-            }
-        }, 1000);
-        checkDisabled();
-    };
-
-    // 重新排列当前卡牌
-    function shuffleCards() {
-        const items = [...main.querySelectorAll('.item')];
-        if (items.length === 0) {
-            alert('当前没有可打乱的卡牌！');
-            return;
-        }
-
-        // 获取当前所有卡牌的内容（背景图和名称）
-        const cardData = items.map(item => ({
-            bg: item.style.backgroundImage,
-            name: item.textContent
-        }));
-
-        // 将卡牌内容打乱
-        cardData.sort(() => Math.random() - 0.5);
-
-        // 重新分配打乱后的内容到原有位置的卡牌元素上
-        items.forEach((item, index) => {
-            const card = cardData[index];
-            item.style.backgroundImage = card.bg;
-            item.textContent = card.name;
-        });
-
-        // 更新卡牌状态
-        checkDisabled();
-    }
-
+  const restartGame = () => {
+    level = 1;
     startNewLevel();
+  };
+
+  const continueGame = () => {
+    gameTimeRemaining += 60;
+    gameOverMenu.style.display = 'none';
+    startTimer();
+  };
+
+  // 检查被遮住的底牌需标暗色
+  function checkDisabled() {
+    // 检查所有卡牌是否被部分遮挡，并决定它们是否可以被点击
+    main.querySelectorAll(".item").forEach(v => {
+      const [layer, row, col] = v.id.substring(1).split("-").map(Number);
+
+      // 假设卡牌一开始是可以点击的
+      let isDisabled = false;
+
+      // 检查上方是否有遮挡这张卡牌的卡牌
+      for (let i = layer + 1; i <= layerCount - 1; i++) {
+        const topLayerCard = main.querySelector(`#m${i}-${row}-${col}`);
+
+        if (topLayerCard) {
+          // 上方卡牌存在，检查四个角是否遮挡
+          const topLeftCard = main.querySelector(`#m${i}-${row}-${col - 1}`);
+          const topRightCard = main.querySelector(`#m${i}-${row}-${col + 1}`);
+          const bottomLeftCard = main.querySelector(`#m${i}-${row + 1}-${col - 1}`);
+          const bottomRightCard = main.querySelector(`#m${i}-${row + 1}-${col + 1}`);
+
+          // 如果四个角都被遮挡，设置为不可点击
+          if (
+                  topLeftCard || topRightCard ||
+                  bottomLeftCard || bottomRightCard
+          ) {
+            isDisabled = true;
+            break;
+          }
+        }
+      }
+
+      if (isDisabled) {
+        v.classList.add("disabled");
+      } else {
+        v.classList.remove("disabled");
+      }
+    });
+  }
+
+
+  // 点击卡片进行消除计算
+  let canMove = true;
+  const move = (me) => {
+    if (!canMove || me.classList.contains("disabled")) {
+      return;
+    }
+
+    canMove = false;
+    let left = moveList.offsetLeft;
+    let top = moveList.offsetTop;
+
+    if (moveList.children.length > 0) {
+      let el = moveList.children[moveList.children.length - 1];
+      left = el.offsetLeft + size;
+      top = el.offsetTop;
+    }
+
+    me.style.top = `${top}px`;
+    me.style.left = `${left}px`;
+    me.style.zIndex = 1000;  // 确保移动时卡片位于最上层
+
+    me.transitionNamesCount = 0;
+    me.ontransitionend = () => {
+      me.transitionNamesCount++;
+      if (me.transitionNamesCount === 2) {
+        moveEnd(me);
+        canMove = true;
+      }
+    };
+  };
+
+  function checkAboveCards(card) {
+    // 获取点击卡片的位置信息
+    const cardPos = card.id.substring(1).split('-').map(Number);
+
+    // 遍历所有上层卡片，检查是否被遮挡并更新位置
+    for (let i = cardPos[0] + 1; i <= layerCount - 1; i++) {
+      const aboveCard = main.querySelector(`#m${i}-${cardPos[1]}-${cardPos[2]}`);
+
+      if (aboveCard && aboveCard.classList.contains("disabled")) {
+        // 计算新位置，让上层卡牌下落
+        let pyStep = (i % 2 === 0) ? size / 2 : 0;
+        aboveCard.style.top = `${size * cardPos[1] + pyStep}px`;
+        aboveCard.style.left = `${size * cardPos[2] + pyStep}px`;
+
+        // 检查是否还被其他卡牌覆盖
+        checkDisabled([aboveCard]);
+      }
+    }
+  }
+
+  // 重新排列当前卡牌
+  function shuffleCards() {
+    const items = [...main.querySelectorAll('.item')];
+    if (items.length === 0) {
+      alert('当前没有可打乱的卡牌！');
+      return;
+    }
+
+    // 获取当前所有卡牌的内容（背景图和名称）
+    const cardData = items.map(item => ({
+      bg: item.style.backgroundImage,
+      name: item.textContent
+    }));
+
+    // 将卡牌内容打乱
+    cardData.sort(() => Math.random() - 0.5);
+
+    // 重新分配打乱后的内容到原有位置的卡牌元素上
+    items.forEach((item, index) => {
+      const card = cardData[index];
+      item.style.backgroundImage = card.bg;
+      item.textContent = card.name;
+    });
+
+    // 更新卡牌状态
+    checkDisabled();
+    // 检查是否需要让上方卡牌下落
+    items.forEach(item => checkAboveCards(item));
+  }
+
+  // 语音播报函数
+
+  /*    // 确保语音合成 API 加载完成
+      window.speechSynthesis.onvoiceschanged = function() {
+          const voices = window.speechSynthesis.getVoices();
+          console.log(voices); // 打印出所有可用的语音
+      };*/
+
+  function speakCardName(cardName) {
+    const utterance = new SpeechSynthesisUtterance(cardName);
+    const voices = window.speechSynthesis.getVoices();
+
+    /*        // 尝试选择一个更柔和的声音,safari和百度用不了
+            const softVoice = voices.find(voice =>
+                voice.name.includes('Microsoft Xiaoxiao') ||
+                voice.name.includes('Samantha') ||  //safari的
+                voice.name.includes('Female voice')
+            );
+
+            if (softVoice) {
+                utterance.voice = softVoice;
+            }*/
+
+    utterance.lang = 'zh-CN'; // 设置为中文普通话
+    utterance.pitch = 0.90; // 设置音调
+    utterance.rate = 1.05; // 可以稍微提高语速
+    utterance.volume = 0.6; // 设置音量
+
+    window.speechSynthesis.speak(utterance);
+  }
+
+  // 动画结束的相关计算
+  function moveEnd(me) {
+    me.ontransitionend = null;
+    me.setAttribute("onclick", "");
+    moveList.appendChild(me);
+
+    const findResult = [...moveList.children].filter(
+            v => v.innerHTML === me.innerHTML
+    );
+
+    // 如果有三张相同的卡牌则消除
+    if (findResult.length === 3) {
+      speakCardName(me.innerHTML);
+      findResult.forEach(v => {
+        v.ontransitionend = () => {
+          // 只移除这三张卡片
+          if (moveList.contains(v)) {
+            moveList.removeChild(v);
+          }
+
+          [...moveList.children].forEach((v, i) => {
+            v.style.left = `${i * size + moveList.offsetLeft}px`;
+          });
+        };
+        setTimeout(() => (v.style.transform = "scale(0)"), 100); // 添加短暂延时避免UI冲突
+      });
+    }
+
+    setTimeout(() => {
+      if (moveList.children.length >= 8) {
+        showGameOverMenu("池子已满，游戏结束");
+      } else if (main.children.length === 0) {
+        alert(`恭喜通关第${level}关`);
+        level++;
+        startNewLevel();
+      }
+    }, 1000);
+
+    // 更新卡牌数量
+    updateCardCount(); // 更新卡牌数目
+
+    // 点击卡牌后，重新检查是否有卡牌被遮挡，更新其状态
+    checkDisabled();
+
+    // 检查上方卡片，确保不会移除过多
+    checkAboveCards(me);
+  }
+
+  startNewLevel();
 </script>
 </body>
 </html>
