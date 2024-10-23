@@ -347,13 +347,35 @@
 
   function generateLevel() {
     const shuffledData = simpleData.sort(() => Math.random() - 0.5);
-    const cardTypes = Math.min(level * 2 + 48, simpleData.length);
-    const selectedCards = shuffledData.slice(0, cardTypes);
-    const groups = 6
 
-    const renderData = Array.from(new Array(groups))
-            .flatMap(() => selectedCards.map(v => ({ ...v })))
-            .sort(() => Math.random() - 0.5);
+    // 设置第一关为50种卡牌类型，之后每关增加2种卡牌类型
+    const baseCardTypes = 50; // 第一关的基础卡牌类型数
+    const cardTypes = Math.min(baseCardTypes + (level - 1) * 2, simpleData.length); // 每关增加2种卡牌类型
+
+    // 使用6和9作为卡牌数量
+    const possibleGroups = [3, 6, 9];
+    const totalCards = 288; // 确保卡牌总数为3\6\9的公倍数
+
+    // 随机分配每种卡牌的数量，直到总数为300
+    let remainingCards = totalCards;
+    const selectedCards = shuffledData.slice(0, cardTypes).map(card => {
+      const groupSize = possibleGroups[Math.floor(Math.random() * possibleGroups.length)];
+      const count = Math.min(groupSize, remainingCards); // 每种卡牌的数量不能超过剩余卡牌数
+      remainingCards -= count;
+      return Array(count).fill({ ...card }); // 创建多个相同卡牌
+    }).flat();
+
+    // 如果有未分配的卡牌，继续从现有卡牌中随机分配
+    while (remainingCards > 0) {
+      const groupSize = possibleGroups[Math.floor(Math.random() * possibleGroups.length)];
+      const count = Math.min(groupSize, remainingCards);
+      const card = shuffledData[Math.floor(Math.random() * selectedCards.length)];
+      selectedCards.push(...Array(count).fill({ ...card }));
+      remainingCards -= count;
+    }
+
+    // 打乱已选卡片的顺序
+    const renderData = selectedCards.sort(() => Math.random() - 0.5);
 
     const cellHtml = [];
 
@@ -370,6 +392,7 @@
       }
     }
 
+    // 更新 HTML 布局和样式
     main.innerHTML = cellHtml.reverse().join("");
     main.style.height = `${size * rows + size * 2}px`;
     main.style.width = `${size * cols}px`;
@@ -378,6 +401,7 @@
 
     updateCardCount(); // 更新卡牌数量显示
   }
+
 
   //实时显示卡牌数目
   function updateCardCount() {
