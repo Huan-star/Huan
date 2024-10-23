@@ -437,7 +437,10 @@
   const continueGame = () => {
     gameTimeRemaining += 60;
     gameOverMenu.style.display = 'none';
-    startTimer();
+    clearInterval(timerInterval); // 清除当前计时器
+    startTimer(); // 重新启动计时器
+    canMove = true; // 允许点击
+    checkDisabled(); // 更新卡牌状态
   };
 
   // 检查被遮住的底牌需标暗色
